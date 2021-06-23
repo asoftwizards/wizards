@@ -170,6 +170,13 @@
 		</view>
 	</class>
 
+<!--	<class id="Employment" title="Работа" >
+		<fields>
+			<GPNUser key="pk" title="Код пользователя"/>
+			<GPNProject key="pk" title="Код организации" />
+		</fields>
+	</class> -->
+
 	<class id="MCProject" title="Проект" >
 		<fields>
 			<ProjectID type="ID" key="sk" title="Код проекта" />
@@ -256,8 +263,8 @@
 		<view id="EquipmentKindList" title="Типы оборудования" >
 			<column field="EquipKindID" ret="yes" />
 			<column field="Name" ret="yes" />
-			<column field="OrgID" class="Organization" alias="Producer" />
-			<column field="Name" class="Organization" alias="Producer" />
+			<column field="OrgID" class="Organization" alias="Producer" title="Код поставщика" />
+			<column field="Name" class="Organization" alias="Producer" title="Поставщик"/>
 			<select>
 				<and left-field="ProducerOrgID" compare="=" right-alias="Producer" right-class="Organization" right-field="OrgID" />
 			</select>
@@ -265,8 +272,8 @@
 		<view id="UmbilicalCableMenuList" title="Типы оборудования" >
 			<column field="EquipKindID" ret="yes" />
 			<column field="Name" />
-			<column field="OrgID" class="Organization" alias="Producer" />
-			<column field="Name" class="Organization" alias="Producer" />
+			<column field="OrgID" class="Organization" alias="Producer" title="Код поставщика" />
+			<column field="Name" class="Organization" alias="Producer" title="Поставщик" />
 			<select>
 				<and left-field="Kind" compare="=" literal="UMBILICAL_CABLE" />
 				<and left-field="ProducerOrgID" compare="=" right-alias="Producer" right-class="Organization" right-field="OrgID" />
@@ -275,8 +282,8 @@
 		<view id="PompMenuList" title="Типы оборудования" >
 			<column field="EquipKindID" ret="yes" />
 			<column field="Name" />
-			<column field="OrgID" class="Organization" alias="Producer" />
-			<column field="Name" class="Organization" alias="Producer" />
+			<column field="OrgID" class="Organization" alias="Producer" title="Код поставщика"/>
+			<column field="Name" class="Organization" alias="Producer" title="Поставщик"/>
 			<select>
 				<and left-field="Kind" compare="=" literal="POMP" />
 				<and left-field="ProducerOrgID" compare="=" right-alias="Producer" right-class="Organization" right-field="OrgID" />
@@ -285,8 +292,8 @@
 		<view id="GateValvesMenuList" title="Типы оборудования" >
 			<column field="EquipKindID" ret="yes" />
 			<column field="Name" />
-			<column field="OrgID" class="Organization" alias="Producer" />
-			<column field="Name" class="Organization" alias="Producer" />
+			<column field="OrgID" class="Organization" alias="Producer" title="Код поставщика"/>
+			<column field="Name" class="Organization" alias="Producer" title="Поставщик"/>
 			<select>
 				<and left-field="Kind" compare="=" literal="GATE_VALVES" />
 				<and left-field="ProducerOrgID" compare="=" right-alias="Producer" right-class="Organization" right-field="OrgID" />
@@ -305,13 +312,9 @@
                         <InvNumber type="NAME" notnull="yes" title="Инвентаризационный номер оборудования" />
                         <Shipper ref="Organization" src="/act/GPN/ShipperList" notnull="yes" title="Поставщик" />
 
-<!--			<EquipmentAttr title="Параметр" />
+			<EStatus type="EQUIPMENT_STATUS" title="Статус" notnull="yes" />
+			<EState type="EQUIPMENT_STATE" title="Состояние" notnull="yes" />
 
-                        <ValueInt type="INT" title="Целочисленное значение" />
-                        <ValueDouble type="DOUBLE" title="Дробное значение" />
-                        <ValueStr type="STR500" title="Строковое значение" />
-                        <ValueBool type="BOOL" title="Логическое значение" />
-                        <ValueDate type="DATE" title="Дата" /> -->
 
 		</fields>
                 <view id="EquipmentList" title="Оборудование проектов" exclude="AddEquipment" >
@@ -327,14 +330,8 @@
                         <column field="Name" class="EquipmentPoint" alias="Point2" />
                         <column field="InvNumber" />
                         <column field="Name" class="Organization" alias="Shipper" title="Поставщик" />
+			<column field="EStatus" />
 
-<!--                        <column field="EAttrID" />
-                        <column field="Name" alias="ea" class="EquipmentAttr" />
-                        <column field="ValueInt" />
-                        <column field="ValueDouble" />
-                        <column field="ValueStr" />
-                        <column field="ValueBool" />
-                        <column field="ValueDate" /> -->
                        <left-join with="EquipmentPoint" alias="Point2" >
                                 <and left-field="Point2PointID" compare="=" right-alias="Point2" right-class="EquipmentPoint" right-field="PointID" />
                                 <and left-field="ProjectID" left-class="EquipmentPoint" left-alias="Point2" compare="=" right-alias="mcp" right-class="MCProject" right-field="ProjectID" />
@@ -350,6 +347,26 @@
                         </select>
 
                 </view>
+                <view id="EquipmentMenuList" title="Оборудование проектов" exclude="AddEquipment" >
+                        <column field="EquipID" ret="yes"/>
+                        <column field="ProjectID" class="MCProject" alias="mcp" />
+                        <column field="Name" class="MCProject" alias="mcp" />
+                        <column field="Kind" class="EquipmentKind" alias="EType" title="Оборудование" />
+                        <column field="Name" class="EquipmentKind" alias="EType" title="Модель" />
+                        <column field="Name" class="Organization" alias="Producer" title="Производитель" />
+                        <column field="InvNumber" />
+                        <column field="Name" class="Organization" alias="Shipper" title="Поставщик" />
+			<column field="EStatus" />
+			<column field="EState" />
+
+                        <select>
+				<and left-field="EquipKindID" compare="=" right-alias="EType" right-class="EquipmentKind" right-field="EquipKindID" />
+				<and left-field="ProducerOrgID" left-class="EquipType" left-alias="EType" compare="=" right-alias="Producer" right-class="Organization" right-field="OrgID" />
+				<and left-field="ShipperOrgID" compare="=" right-alias="Shipper" right-class="Organization" right-field="OrgID" />
+                        </select>
+
+                </view>
+
 
 	</class>
 	<class id="UmbilicalCable" title="Шлангокабель" parent="Equipment" >
@@ -439,18 +456,21 @@
 		<elem id="Projects" title="Проекты" >
 			<elem id="All" title="Проекты" src="/act/GPN/MCProjectList"/>
 		</elem>
+		<elem id="Equipments" title="Оборудование" >
+			<elem id="EStore" title="Оборудование" src="/act/GPN/EquipmentMenuList"/>
+		</elem>
 		<elem id="Reports" title="Отчеты" >
 		</elem>
 		<elem id="Books" title="Справочники" >
-			<elem id="Orgs" title="Организации" >
+			<elem id="OrgsBook" title="Организации" >
 				<elem id="Executers" title="Подрядные организации" src="/act/GPN/ExecuterList" />
 				<elem id="Producers" title="Производители" src="/act/GPN/ProducerList" />
 				<elem id="Shippers" title="Поставщики" src="/act/GPN/ShipperList" />
 			</elem>
-			<elem id="Equipments" title="Оборудование" >
-				<elem id="UmbilicalCables" title="Шлангокабели" src="/act/GPN/UmbilicalCableMenuList" /> 
-				<elem id="Pomps" title="Насосы" src="/act/GPN/PompMenuList" />
-				<elem id="GateValves" title="Задвижки" src="/act/GPN/GateValvesMenuList" />
+			<elem id="EquipmentsBook" title="Оборудование" >
+				<elem id="UmbilicalCablesBook" title="Шлангокабели" src="/act/GPN/UmbilicalCableMenuList" /> 
+				<elem id="PompsBook" title="Насосы" src="/act/GPN/PompMenuList" />
+				<elem id="GateValvesBook" title="Задвижки" src="/act/GPN/GateValvesMenuList" />
 			</elem>
 		</elem>
                 <elem id="Settings" title="Настройки" >

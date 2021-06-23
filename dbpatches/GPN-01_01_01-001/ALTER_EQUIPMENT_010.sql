@@ -1,0 +1,4 @@
+ALTER TABLE Equipment ADD EStatus VARCHAR(40) NOT NULL COMMENT 'Статус';
+ALTER TABLE EquipmentArc ADD EStatus VARCHAR(40) NOT NULL COMMENT 'Статус';
+ALTER TABLE Equipment ADD EState VARCHAR(40) COMMENT 'Состояние';
+ALTER TABLE EquipmentArc ADD EState  VARCHAR(40) COMMENT 'Состояние';

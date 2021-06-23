@@ -25,5 +25,18 @@
 			<item id="POMP" value="pomp" label="Насос" />
 			<item id="GATE_VALVES" value="gate_valves" label="Задвижка" />
 		</type>
+		<type id="EQUIPMENT_STATUS" parent="ENUM" Name="Статус оборудования" >
+			<item id="STORED" value="stored" label="На складе" />
+			<item id="TRANSPORTED" value="transported" label="Транспортируется" />
+			<item id="USED" value="used" label="Используется" />
+			<item id="REPAIR" value="repair" label="На ремонте" />
+		</type>
+		<type id="EQUIPMENT_STATE" parent="ENUM" Name="Состояние оборудования" >
+			<item id="ENEW" value="new" label="Новое" />
+			<item id="EGOOD" value="good" label="Хорошее" />
+			<item id="ESATISFACTORY" value="satisfactory" label="Удовлетворительное" />
+			<item id="EPOOR" value="poor" label="Неудовлетворительное" />
+			<item id="EUNUSABLE" value="unusable" label="Не пригодное к использованию" />
+		</type>
 	</types>
 </project>
