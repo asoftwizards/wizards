@@ -1,0 +1,51 @@
+<wnd xmlns="http://www.asoft.ru/xsl/ai" id="wMain" class="MainWindow" title="Content" this="?">
+
+	<ele class="widget" id="eTree" src="/act/GPN/MainMenuMenu"/>
+	<ele class="widget" id="eHeader" src="/act/GPN/mainheader"/>
+	<ele class="widget" id="eWorkspace" src=""/>
+	<ele class="HistoryPath" id="ePath" src="/act/GPN/GPNUserList" />
+<!--	<ele class="AppFooter" id="AppFooter"/>
+     	-->
+	<a id="Init"/>
+	<lay>
+		<grid id="gHeader" class="MainHeader">
+			<row id="rHeader">
+				<cell id="cHeader">
+					<ele id="eHeader"/>
+				</cell>
+			</row>
+		</grid>
+		<grid id="gContent" class="MainContent" heightLimit="100%">
+			<row id="rMain">
+				<cell id="cTree" class="LeftTree" resize="right" width="250px" max-width="75%">
+					<ele id="eTree">
+					</ele>
+				</cell>
+				<cell id="cMain">
+					<grid id="gPath" class="MainPanel" heightLimit="100%">
+						<row id="rPath" class="MainPath">
+							<cell id="cPath">
+								<ele id="ePath"/>
+							</cell>
+						</row>
+						<row id="rWorkspace" class="MainWorkspace">
+							<cell id="cWorkspace">
+								<ele id="eWorkspace"/>
+							</cell>
+						</row>
+					</grid>
+				</cell>
+			</row>
+		</grid>
+<!--		<grid id="gFooter" class="MainFooter">
+			<row id="rFooter">
+				<cell id="cFooter1"><t>
+					<span class="FooterSpan1">Министерство внутренних дел Российской Федерации, 2019 г.</span><span class="FooterSpan2">Обратная связь с руководством</span>
+				</t></cell>
+				<cell id="cFooter2"><t>
+					<span class="FooterSpan3">Круглосуточная служба поддержки: 8 (800) 2000-462, 8 (495) 667-67-17 |</span><span class="FooterSpan4">helpdesk@mvd.ru</span>
+				</t></cell>
+			</row>
+		</grid>-->
+	</lay>
+</wnd>

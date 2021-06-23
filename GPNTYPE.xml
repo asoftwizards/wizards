@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.asoft.ru/xml/st">
+	<types>
+		<type id="USER_STATUS" parent="ENUM" Name="Статус">
+                        <item id="USER_ACTIVE" value="Активный" label="Активный" icon="/images/const_method.gif" />
+                        <item id="USER_BLOCK" value="Заблокирован" label="Заблокирован" icon="/images/delete_method.gif"/>
+                </type>
+		<type id="EQUIPATTR_TYPE" parent="ENUM" Name="Тип параметра">
+                        <item id="DOUBLE_TYPE" value="double" label="дробный"/>
+                        <item id="INT_TYPE" value="int" label="целый"/>
+                        <item id="DATE_TYPE" value="date" label="дата"/>
+                        <item id="STR_TYPE" value="str" label="строковый"/>
+                        <item id="BOOL_TYPE" value="bool" label="логический"/>
+                </type>
+                <type id="ATTR_STATUS" parent="ENUM" Name="Состояние">
+                        <item id="ACTIVE_ATTR" value="Действующий" label="Действующий" icon="/images/const_method.gif" />
+                        <item id="ARCHIVE_ATTR" value="Архив" label="Архив" icon="/images/delete_method.gif" />
+                </type>
+		<type id="POINT_TYPE" parent="ENUM" Name="Тип точки" >
+			<item id="WELL" value="well" label="Скважина" />
+			<item id="LAND" value="land" label="Наземная" />
+		</type>
+		<type id="EQUIP_KIND" parent="ENUM" Name="Оборудование" >
+			<item id="UMBILICAL_CABLE" value="umbilical_cable" label="Шлангокабель" />
+			<item id="POMP" value="pomp" label="Насос" />
+			<item id="GATE_VALVES" value="gate_valves" label="Задвижка" />
+		</type>
+	</types>
+</project>

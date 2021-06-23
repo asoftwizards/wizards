@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wnd xmlns="http://www.asoft.ru/xsl/ai" id="properties" class="generic" title="`Session Properties`" track-changes="no">
+	<st:types xmlns:st='http://www.asoft.ru/xml/st'>
+		<st:type id="SKINS" parent="ENUM">
+      <st:item id="SKIN_MVD" value="mvd" label="Лучший"/>
+			<st:item id="SKIN_ORANGE" value="orange" label="`Orange_SKIN`"/>
+			<st:item id="SKIN_GREEN" value="green" label="`Green_SKIN`"/>
+			<st:item id="SKIN_BLUE" value="blue" label="`Blue_SKIN`"/>
+			<st:item id="SKIN_GRAY" value="gray" label="`Gray_SKIN`"/>
+			<st:item id="SKIN_AQUA" value="aquarium" label="`Aquarium_SKIN`"/>
+		</st:type>
+	</st:types>
+	<ele id="Skin" type="SKINS" class="DropDown"/>
+	<ele id="Save" class="SimpleButton" label="`Save`"/>
+	<ele id="Cancel" class="SimpleButton" label="`Cancel`"/>
+	<a id="Save">
+		<call aid="m1" meth="/srv/WWW/WWWWorker/SetSessionInfo" args="Skin"/>
+		<evt aid="e1" type="WM_COOKIE" name="Skin" data="{Skin}"/>
+		<evt aid="e2" type="WM_REDIRECT" src="/"/>
+	</a>
+	<a id="Cancel">
+		<evt aid="c1" type="WM_POPUP_RETURN"/>
+	</a>
+	<lay>
+		<grid id="main" style="padding: 5px 5px 0px 5px;">
+			<row id="main">
+				<cell id="Skin_label" labelfor="Skin" text="`Skin`" style="white-space: nowrap;"/>
+				<cell id="Skin"><ele id="Skin"/></cell>
+			</row>
+		</grid>
+		<grid id="BGeneral" class="DialogButtons" style="padding: 0px 5px;">
+			<row id="BGeneral">
+				<cell id="BGeneral">
+					<ele id="Save"/>
+				</cell>
+				<cell id="MiscBGeneral" class="MiscButtons">
+					<ele id="Cancel"/>
+				</cell>
+			</row>
+		</grid>
+                                                                        
+	</lay>
+</wnd>

@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+<PSSOptions>
+  <section id="Environment">
+    <section id="Set">
+      <option id="LOG_LEVEL">5</option>
+      <option id="LOG_SHOW_FILE">true</option>
+      <option id="LOG_SHOW_LINE">true</option>
+      <option id="LOG_SHOW_DATE">no</option>
+      <option id="LOG_SHOW_TIME">yes</option>
+      <option id="LOG_SHOW_THREAD">yes</option>
+      <!--			<option id="LOG_FILE">logfile</option>
+-->
+      <option id="LOG_HIDE_COMPONENTS">SYSTEM</option>
+      <option id="LOG_SHOW_COMPONENTS">SYSTEM/UNDEFINED</option>
+      <!--			<option id="LOG_SHOW_COMPONENTS">SYSTEM/COMM</option>
+-->
+      <option id="LOG_SHOW_COMPONENTS">SYSTEM/RDBMS</option>
+      <option id="WWW_Host">*</option>
+      <option id="WWW_Port">2106</option>
+      <option id="ARB_Port">2107</option>
+      <option id="ARB_Host">localhost</option>
+<!--			<option id="CSP_Host">*</option>
+			<option id="CSP_Port">443</option>
+			<option id="CSP_CN">mi</option>
+-->
+    </section>
+    <section id="Append">
+      <section id="PATH">
+        <option id="1">.</option>
+        <option id="2">..</option>
+        <option id="3">/usr/local/aofficeconnector/lib</option>
+      </section>
+      <section id="LOG_HIDE_COMPONENTS">
+        <option id="1">SYSTEM/SOCKET</option>
+      </section>
+    </section>
+  </section>
+  <section id="DBConnection">
+    <option id="ARDBMSLibrary">libardbms_mysql.so</option>
+    <option id="DSN">mysql_gpn</option>
+    <option id="Database">GPN</option>
+    <option id="UserName">root</option>
+    <option id="Password"/>
+    <option id="Port">3306</option>
+    <option id="Host">localhost</option>
+    <option id="PSSLibrary">libapssdb.so</option>
+    <option id="PSSVolume">EmulateSequences=no, AutoCommit=on, RDBMSLib=libardbms_mysql.so, DSN=mysql_gpn, Database=GPN, UserName=root</option>
+  </section>
+  <option id="SessionWatcherTimeout">
+    <int>600</int>
+  </option>
+  <option id="Authenticator">AuthContainer</option>
+  <section id="Authenticator">
+    <option id="Container">AuthContainer</option>
+    <option id="Object">AuthObject</option>
+    <option id="Method">Authenticate</option>
+<!--    <option id="Library">libSUDISAuth.so</option>-->
+    <option id="Library">libIDService.so</option>
+    <option id="Login">admin</option>
+    <option id="Password">1q2w3e</option>
+  </section>
+
+  <section id="WWW">
+    <option id="DefaultURL">/gpn.html</option>
+    <section id="WWW">
+      <option id="Library">/usr/local/effi/lib/libSWS</option>
+      <section id="Parameters">
+        <option id="ThreadsLimit">20</option>
+      </section>
+    </section>
+  </section>
+
+  <section id="GPN">
+    <section id="Authorizer">
+      <option id="Library">/usr/local/effi/lib/libAuthorizer.so</option>
+      <section id="Parameters">
+      </section>
+    </section>
+    <section id="GPN">
+      <option id="Library">./libGPN.so</option>
+      <section id="Parameters">
+        <option id="ThreadsLimit">20</option>
+      </section>
+    </section>
+<!--    <section id="SUDISAuth">
+      <option id="Library">libSUDISAuth.so</option>
+    </section>-->
+    <section id="TaskMan">
+      <option id="Library">libTaskMan.so</option>
+    </section>
+    <section id="Multimedia">
+      <option id="Library">libMultimedia.so</option>
+    </section>
+    <section id="Reporter">
+      <option id="Library">/usr/local/reporter/lib/libReporter.so</option>
+    </section>
+    <section id="Bridge">
+      <option id="Library">libBridge.so</option>
+      <section id="Parameters">
+        <option id="ConfigType">file</option>
+        <option id="ConfigLocation">CONFIG</option>
+      </section>
+    </section>
+  </section>
+  <section id="Modules">
+    <section id="Center">
+      <section id="Params">
+        <option id="Host">localhost</option>
+        <option id="Port">1033</option>
+      </section>
+    </section>
+  </section>
+<!--  <option id="JSSLibrary">libajssv8</option>-->
+</PSSOptions>

@@ -1,0 +1,34 @@
+<wnd xmlns="http://www.asoft.ru/xsl/ai" id="wMainHeader" class="wcMainHeader" title="Main Header">
+  <ele id="TokenName" class="StringInput" type="NAME" visibility="vo"/>
+  <ele id="nmm" class="label" type="NAME" visibility="vo" title="GPN"/>
+  <ele id="nmm1" class="label" type="NAME" visibility="vo" title=""/>
+  <ele id="Logo" type="IMAGE" class="ImageViewer" visibility="vo" src="/images-GPN/logo.png"/>
+	<ele id="Login" class="StringInput" type="LOGIN" visibility="vo" field="Login"/>
+	<ele id="lname" class="StringInput" type="LOGIN" visibility="vo" field="Login"/>
+	<ele id="fname" class="StringInput" type="LOGIN" visibility="vo" field="Login"/>
+	<ele id="sname" class="StringInput" type="LOGIN" visibility="vo" field="Login"/>
+	<ele id="properties"/>
+	<ele id="Help" src="/help/gpn-help.html"/>
+	<a id="Init">
+<!--	  <call aid="c0" meth="/srv/ABEA/ExpertCenter/GetCurrent" rets="Login TokenName=CenterName"/>
+	  <call aid="c1" meth="/srv/ABEA/Expert/GetCurrent" rets="lname=LastName fname=FirstName sname=SecondName"/> -->
+	  <!--		<call aid="c0" meth="/srv/ABEA/ExpertCenter/GetCurrent" rets="Login TokenName=CenterName"/>-->
+<!--		<call aid="c1" meth="/srv/Authorizer/Users/GetCurrent" rets="Login TokenName"/> -->
+<!--		<call aid="c2" meth="/srv/Nevod/Region/GetCurrent" rets="TokenName=RegionName Login"/> -->
+	</a>
+	<a id="logout">
+		<evt aid="c1" type="WM_REDIRECT" src="#logout" args=""/>
+	</a>
+	<a id="properties">
+		<evt aid="popupcall" type="WM_POPUP" id="properties" src="/act/GPN/properties"/>
+	</a>
+	<lay>
+		<grid id="UserParams">
+			<row id="hr">
+			  <cell id="ho"><ele id="Logo"/><ele id="nmm"></ele><ele id="nmm1"></ele></cell><cell id="ho1"><ele id="TokenName"/></cell>
+			</row>
+		</grid>
+		<ele id="ServerEventListener" class="ServerEventListener" visibility="no"/>
+		<ele id="ProgressBarMgrClass" visibility="no" class="ProgressBarMgrClass"/>
+	</lay>
+</wnd>

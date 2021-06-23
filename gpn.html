@@ -1,0 +1,252 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<title>GPN Tech.Challenge</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		
+		<script type="text/javascript" src="/js/lib/prototype.js"></script>
+		<script type="text/javascript" src="/js/lib/randomUUID.js"></script>
+<!--		<script type="text/javascript" src="/js/lib/calendar.js"></script>
+		<script type="text/javascript" src="/js/lib/calendar-setup.js"></script>
+	-->
+
+		<script type="text/javascript" src="/js/lib-mod/animation.js"></script>
+		<script type="text/javascript" src="/js/jscontrol.js"></script>
+		<script type="text/javascript" src="js/ajax-request.js"></script>
+		<script type="text/javascript" src="/js/xml-dom.js"></script>
+		<script type="text/javascript" src="js/acommon.js"></script>
+		<script type="text/javascript" src="js/types.js"></script>
+		<script type="text/javascript" src="js/aserializer.js"></script>
+		<script type="text/javascript" src="js/axmlserializer.js"></script>
+		<script type="text/javascript" src="/js/aurlserializer.js"></script>
+		<script type="text/javascript" src="js/aswitch.js"></script>
+		<script type="text/javascript" src="js/scr-grid-service.js"></script>
+		<script type="text/javascript" src="js/scr-grid.js"></script>
+		<script type="text/javascript" src="js/hpath.js"></script>
+		<script type="text/javascript" src="js/tabbar.js"></script>
+		<script type="text/javascript" src="js/window.js"></script>
+		<script type="text/javascript" src="js/integer_input.js"></script>
+		<script type="text/javascript" src="js/string_input.js"></script>
+		<script type="text/javascript" src="js/text_input.js"></script>
+		<script type="text/javascript" src="js/button.js"></script>
+		<script type="text/javascript" src="js/masked_input.js"></script>
+		<script type="text/javascript" src="js/money_input.js"></script>
+		<script type="text/javascript" src="js/items-list.js"></script>
+		<script type="text/javascript" src="js/drop_down.js"></script>
+		<script type="text/javascript" src="js/multi-select.js"></script>
+		<script type="text/javascript" src="js/autosuggest.js"></script>
+		<script type="text/javascript" src="js/radiobutton.js"></script>
+		<script type="text/javascript" src="js/superclass_input.js"></script>
+		<script type="text/javascript" src="js/time_input.js"></script>
+		<script type="text/javascript" src="js/date-time-input.js"></script>
+		<script type="text/javascript" src="js/clock.js"></script>
+		<script type="text/javascript" src="js/calendar.js"></script>
+		<script type="text/javascript" src="js/timestamp.js"></script>
+		<script type="text/javascript" src="js/moving_element.js"></script>
+		<script type="text/javascript" src="js/date_input.js"></script>
+<!--		<script type="text/javascript" src="/js/lib/calendar-lang/calendar-en.js"></script>
+		<script type="text/javascript" src="js/lib/calendar-lang/calendar-`language`.js"></script> 
+		-->
+		<script type="text/javascript" src="js/control-array.js"></script>
+		<script type="text/javascript" src="js/file_uploader.js"></script>
+		<script type="text/javascript" src="js/tree.js"></script>
+		<script type="text/javascript" src="skins/green/tree.js"></script>
+		<script type="text/javascript" src="js/popup.js"></script>
+		<script type="text/javascript" src="js/control.js"></script>
+		<script type="text/javascript" src="js/base64.js"></script>
+		<!--<script type="text/javascript" src="/js/perftest.js"></script>-->
+		<script type="text/javascript" src="/js/event-manager.js"></script>
+		<script type="text/javascript" src="/js/server_event_listener.js"></script>
+		<script type="text/javascript" src="/js/message_processor.js"></script>
+		<script type="text/javascript" src="/js/checkbox.js"></script>
+		<script type="text/javascript" src="/js/checklist.js"></script>
+		<script type="text/javascript" src="/js/collector.js"></script>
+		<script type="text/javascript" src="/js/request-loader.js"></script>
+		<script type="text/javascript" src="/js/xml-element.js"></script>
+		<script type="text/javascript" src="/js/figure.js"></script>
+		<script type="text/javascript" src="/js/main.js"></script>
+		<script type="text/javascript" src="js/color-input.js"></script>
+		
+		<script language="javascript">window.allow_firefox_cadesplugin_async=1</script>
+		<script src="/js/lib/cadesplugin_api.js"></script>
+		<script src="/js/base64.js"></script>
+
+		<script type="text/javascript" src="/js/ecp_cryptopro.js"></script>
+                
+<!--                <script type="text/javascript" src="/js/graphviewer.js"></script>
+                <script type="text/javascript" src="/js/graph/raphael.js"></script>
+                <script type="text/javascript" src="/js/graph/raphael-zoom.js"></script>
+                <script type="text/javascript" src="js/graph/joint.js"></script>
+                <script type="text/javascript" src="/js/graph/joint.dia.js"></script>
+                <script type="text/javascript" src="/js/graph/joint.dia.org.js"></script>
+                <script type="text/javascript" src="/js/graph/joint.dia.serializer.js"></script>
+                <script type="text/javascript" src="/js/graph/visualisation.js"></script>
+-->
+		
+		<script type="text/javascript" src="/js/scr-grid-export.js"></script>
+		<script type="text/javascript" src="js/images.js"></script>
+		<script type="text/javascript" src="/js/multimedia.js"></script>
+
+		<script type="text/javascript" src="/js/graph/jquery.js"></script>
+		<script type="text/javascript" src="/js/graph/lodash.js"></script>
+		<script type="text/javascript" src="/js/graph/backbone.js"></script>
+                <script type="text/javascript" src="/js/graph/joint.min.js"></script>
+                <script type="text/javascript" src="/js/graph/joint.shapes.org.js"></script>
+                <link rel="stylesheet" type="text/css" href="/js/graph/joint.min.css"/>
+                <script type="text/javascript" src="/js/graphviewer.js"></script>
+		<script type="text/javascript" src="/js/fourpoleviewer.js"></script>
+		<link rel="stylesheet" type="text/css" href="/css/style.css" />
+		<link rel="stylesheet" type="text/css" href="/css/common.css" />
+		
+		<style>
+.login_label {
+	font-family: PT sans;
+	font-size: 24px;
+	font-weight: bold;
+	color:#0A0B0C;
+}
+
+td.login_button {
+	padding: 3px;
+}
+
+table.login td {
+	padding-bottom: 7px;
+	padding-right: 27px;
+}
+
+input.login_button {
+	font-family: pt sans;
+	font-size: 14px;
+	font-weight: bold;
+	padding-left: 0px;
+	padding-right: 0px;
+	width: 120px !important;
+	height:32px !important;
+	border-radius: 3px;
+	border-color: #021124;
+	text-align: center!important;
+}
+
+div#loginArea input {
+	width: 230px;
+	height: 40px;
+	border: 0px solid #021124;
+	margin-bottom: 0px;
+	vertical-align: middle;
+	font-family: PT sans;
+	font-size: 14pt;
+	text-align: left;
+	padding-left: 0px;
+	padding-right: 0px;
+	border-radius: 3px;
+}
+
+div#loginArea input:focus{
+//	outline: none;
+}
+		</style>
+
+		<script type="text/javascript">
+		var $j = jQuery.noConflict();
+
+		function change_login_top(){
+			var element = document.getElementById('decorator');
+			var error = document.getElementById('login_error');
+				
+				element.style['background'] = '#dddddd';
+				error.style['color'] = '#0000FF';
+		/*
+			var ch_skin = document.getElementById('skin').value;
+			if(!ch_skin) ch_skin=OriginalSkin;
+			var element = document.getElementById('decorator');
+			var error = document.getElementById('login_error');
+			if (ch_skin == "green") {
+				element.style['background'] = 'url(/images/Login_top.png) repeat-x';
+				error.style['color'] = '#C7B732';
+			}
+			else if (ch_skin == "blue") {
+				element.style['background'] = 'url(/images-ABEA/login_top_blue.png) repeat-x';
+				error.style['color'] = '#0000FF';
+			}
+			 else if (ch_skin == "mvd") {
+				element.style['background'] = '#015b9e';
+				error.style['color'] = '#0000FF';
+			 }
+			else {
+				element.style['background'] = 'url(/images-ABEA/login_top.png) repeat-x';
+				error.style['color'] = '#808080';
+			}*/
+		}
+		function GetCookie(name) {
+			var prefix=name+"=";
+			var start=document.cookie.indexOf(prefix);
+			if(start==-1) return null;
+			var end=document.cookie.indexOf(';', start+prefix.length+1);
+			if(end==-1) end=document.cookie.length;
+			return unescape(document.cookie.substring(start+prefix.length, end));
+		}
+		var OriginalSkin="orange";//""default";
+		function setup_defaults() {
+			var skin=GetCookie("Skin");
+			if(skin) {
+				OriginalSkin=skin;
+			}
+			change_login_top();
+		}
+		var windowOnLoad=window.onload||function(){};
+		window.onload=function() { windowOnLoad(); };
+		</script>
+	</head>
+	<body id="body" style="background-color: #fefefe;" onload="setup_defaults(); Main(DisplayError, '/act/GPN/main');" onunload="GXHRManager.DestroyRequests();">
+<!--	<p class="gradient"></p>-->
+	<div class="login" style="background-color: #bbbbbb;" id="decorator">
+		</div>
+		<div id=loginArea style="border:0px; width:25%">
+			<div id=titleArea style="margin-top:230px;padding-left:0px;margin-bottom:0px">
+			<table>
+			<tr>
+			<td>
+				<img src="/images-GPN/logo.png" style="padding-left:0px; width: 160px;" alt="Logo" />
+			</td>
+			<td><!--<span class="Logotype" style=" color: #FAFBFC; font-size: xx-large; font-family: PT sans; margin: 16px;" > МВД&nbsp;России</span>-->
+			<span class="AISName" style=" color: #0A0B0C; font-variant: all-small-caps; font-size: xxx-large; font-family: PT sans; margin: 16px; ">GPN Tech.Challenge</span></td>
+			</tr>
+			</table>
+			</div>
+			<form onsubmit="return false;">
+				<table class="login"><tbody>
+					<tr><td colspan="2" id="login_error" style="color: #0000FF;"></td></tr>
+					<tr>
+						<td class="login_label">Пользователь:</td>
+						<td><input id="login"  tabindex="1"/></td>
+					<tr>
+						<td class="login_label">Пароль:</td>
+						<td><input id="password" type="password"  tabindex="2"/></td>
+					</tr>
+					<TR>
+						<TH style="border:0px;"></TH>
+						<TD style="border:0px;background:none" class="login_button" nowrap="yes">
+							<INPUT id="login_button" type=submit class="login_button" tabIndex=4 value="Войти" onclick="PerformLogin( $('login').value, $('password').value, 'ru_RU', '' );"/>
+							<INPUT id="reset_button" type=reset class="login_button"  tabIndex=5 value="Очистить"/>
+						</TD>
+					</TR>
+					</tbody>
+				</table>
+			</form>
+		</div>
+		<script type="text/javascript" language="javascript">
+			function DisplayError(err, errCode) {
+				var errTD = $('login_error');
+				if (!err) {
+					errTD.hide();
+				}
+				else {
+					errTD.show();
+					errTD.innerHTML = (errCode != ACCESS_DENIED_EXCEPTION ? err :
+										"Доступ запрещен.");
+				}
+			}
+		</script>
+	</body>
+</html>
