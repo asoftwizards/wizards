@@ -191,7 +191,6 @@
 			<column field="Name" ret="yes" />
 			<column field="BDate" />
 			<column field="EDate" />
-			<column field="Name" alias="customer" class="Organization" title="Заказчик" />
 			<column field="Name" alias="executer" class="Organization" title="Подрядная организация" />
 
 			<left-join with="Organization" alias="executer" >
