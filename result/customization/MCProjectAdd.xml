@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wnd xmlns="http://www.asoft.ru/xsl/ai" id="MCProjectAdd" class="generic" title="`Проект`">
+  <a id="Choose_Executer">
+    <evt aid="popupcall" type="WM_POPUP" id="Choose_Executer" src="/act/GPN/ExecuterListPopup" args="" rets=""/>
+  </a>
+</wnd>

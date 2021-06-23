@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wnd xmlns="http://www.asoft.ru/xsl/ai" id="PompAdd" class="generic" title="`Насос`">
+  <a id="Choose_Producer">
+    <evt aid="popupcall" type="WM_POPUP" id="Choose_Producer" src="/act/GPN/ProducerListPopup" args="" rets=""/>
+  </a>
+  <a id="Choose_Shipper">
+    <evt aid="popupcall" type="WM_POPUP" id="Choose_Shipper" src="/act/GPN/ShipperListPopup" args="" rets=""/>
+  </a>
+  <a id="Choose_EquipmentKind">
+    <evt aid="popupcall" type="WM_POPUP" id="Choose_EquipmentKind" src="/act/GPN/PompMenuListPopup" args="" rets=""/>
+  </a>
+  <lay>
+    <grid id="General">
+      <row id="Point2" hide="yes" >
+      </row>
+    </grid>
+  </lay>
+</wnd>
