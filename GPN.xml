@@ -347,6 +347,11 @@
                         </select>
 
                 </view>
+		<method id="EquipmentMenuListGet" >
+			<arg field="EquipmentKind" optional="yes" />
+			<arg field="Point1" optional="yes" />
+			<arg field="Shipper" optional="yes" />
+		</method>
                 <view id="EquipmentMenuList" title="Оборудование проектов" exclude="AddEquipment" >
                         <column field="EquipID" ret="yes"/>
                         <column field="ProjectID" class="MCProject" alias="mcp" />
@@ -359,12 +364,12 @@
 			<column field="EStatus" />
 			<column field="EState" />
 
-                        <select>
+<!--                        <select>
 				<and left-field="EquipKindID" compare="=" right-alias="EType" right-class="EquipmentKind" right-field="EquipKindID" />
 				<and left-field="ProducerOrgID" left-class="EquipType" left-alias="EType" compare="=" right-alias="Producer" right-class="Organization" right-field="OrgID" />
 				<and left-field="ShipperOrgID" compare="=" right-alias="Shipper" right-class="Organization" right-field="OrgID" />
                         </select>
-
+-->
                 </view>
 
 

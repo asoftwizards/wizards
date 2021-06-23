@@ -315,4 +315,41 @@ const Value GPNGPNUser::GPNUserListGet() {
 	return res;
 }
 
+const Value GPNEquipment::EquipmentMenuListGet(const optional<Int> EquipKindID, const optional<Int> Point1PointID, const optional<Int> ShipperOrgID) {
+	Data::DataList lr;
+	lr.AddColumn("EquipID", Data::INTEGER);
+	lr.AddColumn("mcpProjectID", Data::INTEGER);
+	lr.AddColumn("mcpName", Data::STRING);
+	lr.AddColumn("ETypeKind", Data::STRING, EQUIP_KINDValues());
+	lr.AddColumn("ETypeName", Data::STRING);
+	lr.AddColumn("ProducerName", Data::STRING);
+	lr.AddColumn("InvNumber", Data::STRING);
+	lr.AddColumn("ShipperName", Data::STRING);
+	lr.AddColumn("EStatus", Data::STRING, EQUIPMENT_STATUSValues());
+	lr.AddColumn("EState", Data::STRING, EQUIPMENT_STATEValues());
+	Equipment aEquipment;
+	MCProject amcp;
+	EquipmentKind aEType;
+	Organization aProducer;
+	Organization aShipper;
+	lr.Bind(aEquipment.EquipID, "EquipID");
+	lr.Bind(amcp.ProjectID, "mcpProjectID");
+	lr.Bind(amcp.Name, "mcpName");
+	lr.Bind(aEType.Kind, "ETypeKind");
+	lr.Bind(aEType.Name, "ETypeName");
+	lr.Bind(aProducer.Name, "ProducerName");
+	lr.Bind(aEquipment.InvNumber, "InvNumber");
+	lr.Bind(aShipper.Name, "ShipperName");
+	lr.Bind(aEquipment.EStatus, "EStatus");
+	lr.Bind(aEquipment.EState, "EState");
+	Selector sel;
+	sel << aEquipment->EquipID << amcp->ProjectID << amcp->Name << aEType->Kind << aEType->Name << aProducer->Name << aEquipment->InvNumber << aShipper->Name << aEquipment->EStatus << aEquipment->EState;
+	sel.Where((aEquipment->EquipKindID==aEType->EquipKindID && aEType->ProducerOrgID==aProducer->OrgID && aEquipment->ShipperOrgID==aShipper->OrgID) &&  (Defined(EquipKindID) ? aEquipment->EquipKindID==*EquipKindID : Expression()) &&  (Defined(Point1PointID) ? aEquipment->Point1PointID==*Point1PointID : Expression()) &&  (Defined(ShipperOrgID) ? aEquipment->ShipperOrgID==*ShipperOrgID : Expression()));
+	DataSet data=sel.Execute(rdb_);
+	while(data.Fetch()) lr.AddRow();
+	Value res=lr;
+	return res;
+}
+
+
 }
