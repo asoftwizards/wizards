@@ -272,8 +272,6 @@
 		</method>
                 <view id="EquipmentMenuList" title="Оборудование проектов" exclude="AddEquipment" >
                         <column field="EquipID" ret="yes"/>
-                        <column field="ContractID" class="Contract" alias="mcp" />
-                        <column field="Name" class="Contract" alias="mcp" />
                         <column field="Kind" class="EquipmentKind" alias="EType" title="Оборудование" />
                         <column field="Name" class="EquipmentKind" alias="EType" title="Модель" />
                         <column field="InvNumber" />
@@ -295,6 +293,12 @@
 			<Power type="DOUBLE" notnull="yes" title="Мощность" />
 			<Capacity type="INT" notnull="yes" title="Производительность" />
 		</fields>
+<!--		<method id="Add" >
+			<arg field="InvNumber" />
+			<arg field="Power" />
+			<arg field="Capacity" />
+			<ret field="EquipID" />
+		</method> -->
 		<view id="PompList" title="Насосы" exclude="AddPomp Delete ">
 			<column field="EquipID" />
 			<column field="EquipKindID" class="EquipmentKind" alis="EKind" />

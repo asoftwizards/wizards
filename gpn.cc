@@ -318,19 +318,14 @@ const Value GPNGPNUser::GPNUserListGet() {
 const Value GPNEquipment::EquipmentMenuListGet(const optional<Int> EquipKindID ) {
 	Data::DataList lr;
 	lr.AddColumn("EquipID", Data::INTEGER);
-	lr.AddColumn("mcpContractID", Data::INTEGER);
-	lr.AddColumn("mcpName", Data::STRING);
 	lr.AddColumn("ETypeKind", Data::STRING, EQUIP_KINDValues());
 	lr.AddColumn("ETypeName", Data::STRING);
 	lr.AddColumn("InvNumber", Data::STRING);
 	lr.AddColumn("EStatus", Data::STRING, EQUIPMENT_STATUSValues());
 	lr.AddColumn("EState", Data::STRING, EQUIPMENT_STATEValues());
 	Equipment aEquipment;
-	Contract amcp;
 	EquipmentKind aEType;
 	lr.Bind(aEquipment.EquipID, "EquipID");
-	lr.Bind(amcp.ContractID, "mcpContractID");
-	lr.Bind(amcp.Name, "mcpName");
 	lr.Bind(aEType.Kind, "ETypeKind");
 	lr.Bind(aEType.Name, "ETypeName");
 	lr.Bind(aEquipment.InvNumber, "InvNumber");
@@ -338,7 +333,7 @@ const Value GPNEquipment::EquipmentMenuListGet(const optional<Int> EquipKindID )
 	lr.Bind(aEquipment.EState, "EState");
 	Selector sel;
 	sel << aEquipment->EquipID << aEquipment->InvNumber << aEquipment->EStatus << aEquipment->EState
-		<< amcp->ContractID << amcp->Name << aEType->Kind << aEType->Name;
+		 << aEType->Kind << aEType->Name;
 	sel.Where(aEquipment->EquipKindID==aEType->EquipKindID &&
 		 ( Defined(EquipKindID) ? aEquipment->EquipKindID==*EquipKindID : Expression()) );
 	DataSet data=sel.Execute(rdb_);
