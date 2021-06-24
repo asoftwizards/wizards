@@ -188,26 +188,6 @@
 		</view>
 	</class>
 
-    <class id="Calculation" title="Расчет">
-        <fields>
-            <CalcID type="ID" key="sk" title="Код расчета" />
-            <Contract/>
-            <p1 type="DOUBLE" title="p1" />
-            <p2 type="DOUBLE" title="p2" />
-
-        </fields>
-
-	<view id="CalculationList" title="Расчеты" >
-		<column field="CalcID" />
-		<column field="ContractID" class="Contract" />
-		<column field="Name" class="Contract" />
-		<select>
-                                <and left-field="ContractID" compare="=" right-class="Contract" right-field="ContractID" />
-		</select>
-	</view>
-
-    </class>
-
 	<class id="EquipmentPoint" title="Скважина" >
 		<fields>
 			<PointID type="ID" key="sk" title="Код скважины" hidden="yes" />
@@ -218,7 +198,6 @@
 			<Y type="DOUBLE" notnull="yes" title="Широта" min="-90" max="90" decimal-accuracy="10" />
 			<H type="DOUBLE" title="Глубина" />
 		</fields>
-
 		<view id="EquipmentPointList" title="Скважина" >
 			<column field="PointID" ret="yes" />
 			<column field="Name" ret="yes" />
@@ -233,10 +212,60 @@
 			</select>
 		</view>
 	</class>
+
+	<class id="Documents" title="Документ" >
+                <fields>
+                        <DocID type="ID" key="sk" title="Код документа" hedden="yes"/>
+                        <Name type="NAME" title="Наименование" notnull="yes"/>
+                        <AddDate type="DATE" title="Дата добавления" hidden="yes"/>
+                        <CreateDate type="DATE" title="Дата" />
+                        <AddByUser ref="Users" project="Authorizer" hidden="yes" title="Добавил" />
+                        <Equipment title="Оборудование" />
+                        <FileBody type="BLOB" notnull="yes" title="Документ" hidden="yes"/>
+
+                        <DocFile type="FILE" title="Файл" virtual="yes"/>
+                        <DocsArray type="VALUE" virtual="yes" hide="yes"/>
+                        <Download type="DOWNLOAD" label="Сохранить" visibility="yes" src="/file/ABEA/Documents/Download" virtual="yes" defer="yes"/>
+                        <PrintDoc type="DOWNLOAD" label="Печать" visibility="yes" src="/file/ABEA/Documents/PrintDoc" virtual="yes" defer="yes"/>
+                </fields>
+                <method id="Add" >
+                        <arg field="DocFile" />
+                        <arg field="EquipID" />
+                        <arg field="CreateDate" />
+                </method>
+                <method id="Delete">
+                        <arg field="DocsArray" />
+                </method>
+
+                <method id="Download" >
+                        <arg field="DocID" />
+                </method>
+                <method id="PrintDoc" >
+                        <arg field="DocID" />
+                </method>
+                <method id="DocumentsByEquipListGet" >
+                        <arg field="EquipID" />
+                </method>
+              	<view id="DocumentsList" title="Документы" >
+                        <column field="DocID" />
+                        <column field="Name" />
+                </view>
+                <view id="DocumentsByEquipList" title="Документы" >
+                        <column field="DocID" ret="yes"/>
+                        <column field="Name" />
+                        <column field="CreateDate" />
+                        <column field="Login" class="Users" project="Authorizer" />
+                        <init>
+                                <method id="DocumentsByEquipListGet" />
+                        </init>
+                </view>
+ </class>
+
+
 	<class id="EquipmentKind" title="Типы оборудования" >
 		<fields>
 			<EquipKindID type="ID" key="sk" title="Код типа оборудования" hidden="yes" />
-			<Kind type="EQUIP_KIND" title="Оборудование" />
+			<Kind type="EQUIP_KIND" title="Тип оборудования" />
 			<Name type="NAME" title="Модель" />
 		</fields>
 		<view id="EquipmentKindList" title="Типы оборудования" >
@@ -252,6 +281,23 @@
 		</view>
 	</class>
 
+	<class id="EStatus" title="Статус" >
+		<fields>
+			<StatusID type="ID" key="sk" title="Код статуса" hidden="yes" />
+			<Name type="NAME" title="Статус" notnull="yes" />
+		</fields>
+		<view id="EStatusList">
+			<column field="StatusID" ret="yes" />
+			<column field="Name" ret="yes" />
+		</view>
+		<method id="EStatusNextListGet" >
+			<arg field="StatusID" />
+		</method>
+		<view id="EStatusNextList">
+			<column field="StatusID" />
+			<column field="Name" />
+		</view>
+	</class>
 
 	<class id="Equipment" title="Оборудование" >
 		<fields>
@@ -259,9 +305,9 @@
 			<EquipmentKind title="Оборудование" notnull="yes" />
                         <InvNumber type="NAME" notnull="yes" title="Инвентаризационный номер" />
 
-			<EStatus type="EQUIPMENT_STATUS" title="Статус" notnull="yes" />
+			<EStatus title="Статус" notnull="yes" />
 			<EState type="EQUIPMENT_STATE" title="Состояние" notnull="yes" />
-			<Owner ref="Organization" notnull="yes" title="Организация" />
+			<Owner ref="Organization" notnull="yes" title="Собственник" />
 
 		</fields>
                 <view id="EquipmentList" title="Оборудование" exclude="AddEquipment" >
@@ -269,11 +315,12 @@
                         <column field="Kind" class="EquipmentKind" alias="EType" title="Оборудование" />
                         <column field="Name" class="EquipmentKind" alias="EType" title="Оборудование" />
                         <column field="InvNumber" />
-			<column field="EStatus" />
+			<column field="Name" class="EStatus" />
 
                         <select>
 				<and left-field="EquipKindID" compare="=" right-alias="EType" right-class="EquipmentKind" right-field="EquipKindID" />
 				<and left-field="OwnerOrgID" compare="=" right-class="Organization" right-field="OrgID" />
+				<and left-field="StatusID" compare="=" right-class="EStatus" right-field="StatusID" />
                         </select>
 
                 </view>
@@ -285,7 +332,7 @@
                         <column field="Kind" class="EquipmentKind" alias="EType" title="Оборудование" />
                         <column field="Name" class="EquipmentKind" alias="EType" title="Модель" />
                         <column field="InvNumber" />
-			<column field="EStatus" />
+			<column field="Name" class="EStatus" />
 			<column field="EState" />
 
 <!--                        <select>
@@ -321,6 +368,62 @@
 				<and left-field="EquipKindID" left-class="Equipment" compare="=" right-alias="EKind" right-class="EquipmentKind" right-field="EquipKindID" />
                         </select>
 		</view>
+		<wnd id="PompGet" title="Насос" >
+                        <field id="Download" class="Documents" group="DocumentsGrid" /> 
+                        <field id="DocumentsList" view="DocumentsByEquipList" class="Documents" title="Документы" group="DocumentsGrid">
+                                <column field="DocID" ret="yes" />
+                                <column field="Name" />
+                                <column field="CreateDate" />
+                                <column field="Login" class="Users" project="Authorizer" />
+                        </field>        
+                        <init>
+                                <method id="Get" args="EquipID" />
+                                <method id="DocumentsByEquipListGet" class="Documents" args="EquipID" rets="DocumentsList=*" />
+                        </init>
+                        <button id="Edit" title="Корректировать" >
+                                <wnd id="PompUpdate" args="EquipID" />
+                        </button>
+                        <button id="Cancel" title="Cancel" >
+                                <wnd id="EquipmentList" />
+                        </button>
+<!--                        <act id="PrintDoc" title="Печать" >
+                                <field id="PrintDoc" class="Documents" src="/file/GPN/Documents/PrintDoc" args="DocID=DocumentsList.DocID"/>
+                        </act> -->
+                        <act id="Download" title="Скачать документ" group="DocumentsGrid">
+                                <field id="Download" class="Documents" src="/file/GPN/Documents/Download" args="DocID=DocumentsList.DocID"/>
+                        </act>
+                        <act id="DocumentsList" >
+                                <wnd id="DocumentsFolder" args="DocID=event.DocID EquipID" />
+                        </act>
+
+		</wnd>
+		<wnd id="PompUpdate" title="Насос" >
+                        <field id="DocFile" class="Documents" group="DocumentGrid"/> 
+                         
+                        <field id="DocumentsList" view="DocumentsByEquipList" class="Documents" title="Документы" group="DocumentGrid"> 
+                                <column field="DocID" ret="yes" hidden="yes"/> 
+                                <column field="Name" /> 
+                                <column field="CreateDate" /> 
+                                <column field="Login" class="Users" project="Authorizer" /> 
+                        </field> 
+                        <init>   
+                                <method id="Get" args="EquipID" /> 
+                                <method id="DocumentsByEquipListGet" class="Documents" args="EquipID" rets="DocumentsList=*" /> 
+                        </init>  
+                        <button id="AddDoc" title="Добавить документ" group="DocumentGrid"> 
+                                <method id="Add" class="Documents" args="DocFile EquipID" rets="DocID" /> 
+                                <method id="DocumentsByEquipListGet" class="Documents" args="EquipID" rets="DocumentsList=*" /> 
+                        </button> 
+                        <button id="DelDoc" title="Удалить документ" group="DocumentGrid"> 
+                                <method id="Delete" class="Documents" args="DocsArray=DocumentsList.SelectedRows" /> 
+                                <method id="DocumentsByEquipListGet" class="Documents" args="EquipID" rets="DocumentsList=*" /> 
+                        </button> 
+                        <button id="Update" title="Сохранить" > 
+                                <method id="Update" args="EquipID StatusID EState"/>
+                                <wnd id="PompGet"  args="EquipID" /> 
+                        </button> 
+                </wnd>
+
 	</class>
 
 	<class id="LifeCycle" >

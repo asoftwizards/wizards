@@ -1,0 +1,11 @@
+<wnd xmlns="http://www.asoft.ru/xsl/ai" id="EquipmentFolder" class="TabBar" title="``">
+	<lay>
+		<grid id="gt" class="TabBarGrid">
+			<row id="rt">
+				<cell id="ct1" class="TabBarCell">
+					<ele id="EquipmentGet"/>
+				</cell>
+			</row>
+		</grid>
+	</lay>
+</wnd>

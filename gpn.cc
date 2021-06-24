@@ -1,7 +1,8 @@
 #include "gpn.h"
+#include "stamppdf.h"
 
 #include "Services/Authorizer/authorizer_auto.h"
-//#include "aofficeconnector-transform.h"
+#include "aofficeconnector-transform.h"
 #include "dynwin/dynwin.h"
 
 
@@ -343,23 +344,24 @@ const Value GPNEquipment::EquipmentMenuListGet(const optional<Int> EquipKindID) 
 	lr.AddColumn("ETypeKind", Data::STRING, EQUIP_KINDValues());
 	lr.AddColumn("ETypeName", Data::STRING);
 	lr.AddColumn("InvNumber", Data::STRING);
-	lr.AddColumn("EStatus", Data::STRING, EQUIPMENT_STATUSValues());
+	lr.AddColumn("Name", Data::STRING);
 	lr.AddColumn("EState", Data::STRING, EQUIPMENT_STATEValues());
 	Equipment aEquipment;
 	EquipmentKind aEType;
+	EStatus aEStatus;
 	lr.Bind(aEquipment.EquipID, "EquipID");
 	lr.Bind(aEType.Kind, "ETypeKind");
 	lr.Bind(aEType.Name, "ETypeName");
 	lr.Bind(aEquipment.InvNumber, "InvNumber");
-	lr.Bind(aEquipment.EStatus, "EStatus");
+	lr.Bind(aEStatus.Name, "Name");
 	lr.Bind(aEquipment.EState, "EState");
 
 	Int GOrganization = GOrgID();
 
 	Selector sel;
-	sel << aEquipment->EquipID << aEquipment->InvNumber << aEquipment->EStatus << aEquipment->EState
+	sel << aEquipment->EquipID << aEquipment->InvNumber << aEStatus->Name << aEquipment->EState
 		 << aEType->Kind << aEType->Name;
-	sel.Where(aEquipment->EquipKindID==aEType->EquipKindID &&
+	sel.Where(aEquipment->EquipKindID==aEType->EquipKindID && aEquipment->StatusID == aEStatus->StatusID &&
 		 ( Defined(EquipKindID) ? aEquipment->EquipKindID==*EquipKindID : Expression()) &&
 		 ( IsNotNull( GOrganization ) ? aEquipment->OwnerOrgID == GOrganization : Expression() ));
 	DataSet data=sel.Execute(rdb_);
@@ -392,6 +394,180 @@ const Value GPNContract::ContractListGet(const optional<Int> ExecuterOrgID) {
 	while(data.Fetch()) lr.AddRow();
 	Value res=lr;
 	return res;
+}
+
+const Value GPNDocuments::Add( const BlobAccessor DocFile, const Int EquipID, const ADate CreateDate ) {
+	Int CurrUserID = SimpleThread::GetCurrentContext().GUserID();
+
+	Exception e((Message("Cannot add ") << Message("Документ").What() << ". ").What());
+	bool error=false;
+	error |= Defined(EquipID)  && !__CheckIDExists(Equipment()->EquipID, *EquipID, "Оборудование", e, rdb_);
+	if(error) {
+		throw(e);
+	}
+
+	if(DocFile.IsNull() || DocFile.Name().empty()) {
+		throw Exception("Документ не выбран");
+	}
+
+	try {
+		Documents aDocuments;
+		aDocuments.Name=DocFile.Name();
+		ShPtr<Blob> _File = DocFile.BlobData();
+		aDocuments.FileBody=(*_File);
+
+		aDocuments.AddDate=SimpleThread::GetCurrentContext().GUserTime().date();
+		aDocuments.CreateDate=CreateDate;
+		aDocuments.AddByUserTokenID=CurrUserID;
+		aDocuments.EquipID=EquipID;
+		Int sk=aDocuments.Insert(rdb_);
+		Value res;
+		res["DocID"]=sk;
+		AddMessage(Message()<<Message("Документ").What()<<" "<<sk<<" added. ");
+		return res;
+	}
+	catch (Exception& exc) {
+		if(exc.ErrorCode() == RDBMS_ERR_DUPLICATE_ENTRY) {
+			e << Message("Duplicate entry. ").What();
+		}
+		else {
+			e << Message(exc.what()).What();
+		}
+		throw e;
+	}
+
+}
+
+
+const Value GPNDocuments::DocumentsByEquipListGet( const Int EquipID ) {
+	Data::DataList lr;
+	lr.AddColumn("DocID", Data::INTEGER);
+	lr.AddColumn("Name", Data::STRING);
+	lr.AddColumn("CreateDate", Data::DATETIME);
+	lr.AddColumn("AddByUser", Data::STRING);
+
+
+	Documents aDocuments;
+	AUTHORIZER::Users addU;
+	lr.Bind(aDocuments.DocID, "DocID");
+	lr.Bind(aDocuments.Name, "Name");
+	lr.Bind(aDocuments.CreateDate, "CreateDate");
+	lr.Bind(addU.Login, "AddByUser");
+
+	if( IsNotNull( EquipID ) ) {
+		Selector sel;
+		sel << aDocuments->DocID << aDocuments->Name << aDocuments->CreateDate;
+		sel.LeftJoin( addU ).On( aDocuments->AddByUserTokenID == addU->TokenID );
+		sel.Where( aDocuments->EquipID==EquipID );
+		DataSet data=sel.Execute(rdb_);
+		while(data.Fetch()) lr.AddRow();
+	}
+	Log(0) << "DocumentsByNIDListGet end" << endl;
+	Value res=lr;
+	return res;
+}
+
+const Value GPNDocuments::Download(const Int DocID ) {
+        if (!Defined(DocID)) return BlobFile();
+        Documents doc(DocID);
+        if (!doc.Select(rdb_)) throw Exception("Документ ") << DocID << " не найден. ";
+
+        BlobFile result;
+        if (Defined(doc.Name)) result.SetFileName(*doc.Name );
+        result.SetExpireTime(SimpleThread::GetCurrentContext().GUserTime());
+        result.Content() = doc.FileBody;
+
+        return result;
+}
+
+const Value GPNDocuments::Delete(const Value DocsArray ) {
+        Int DocID;
+        unsigned int max_i = ( DocsArray.IsArray() ? DocsArray.Size() : 1 );
+        for( unsigned i=0; i < max_i; ++i ) {
+                Int DocID = ( DocsArray.IsArray() ?
+                        ( DocsArray[i]["DocID"].As<int>()) :
+                        ( DocsArray.As<int>() )
+                );
+                if( IsNotNull( DocID ) ) {
+                                Documents aRecord( DocID );
+                                aRecord.Delete( rdb_ );
+				AddMessage( Message() << Message("Документ").What()<<" "<<DocID<<" deleted. ");
+
+                }
+        }
+
+        return Value();
+}
+
+
+
+const Value GPNDocuments::PrintDoc(const Int DocID ) {
+        Documents aRecord( DocID );
+        aRecord.Select( rdb_ );
+
+        string fullDocName = aRecord.Name.get_value_or("");
+        string dName = fullDocName.substr( 0, fullDocName.size() - 4 );
+        string sType = fullDocName.substr(fullDocName.size() - 3);
+        string tType = "pdf";
+
+        string dn="/tmp/Converter-"+ToString( time(0) );
+        mkdir(dn.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+        string outfilename = dn + "/out.pdf" ;//"out.pdf";
+        string infilename = dn + "/in."+ sType;//"in."+sType;
+
+        WriteFile(aRecord.FileBody, infilename);
+
+        ::system((string("touch ") + outfilename).c_str());
+
+        if( sType == "doc" ) {
+                Log(0) << "Transform doc:" << fullDocName << " to PDF" << endl;
+        }
+        else if (sType == "xls" ) {
+                Log(0) << "Transform xls:" << fullDocName << " to PDF" << endl;
+
+        } else throw Exception("Недопустимый формат документа");
+
+        DLL::LoadDLL("libaofficeconnector-transform");
+        void* funcPtr = DLL::GetObject("libaofficeconnector-transform", "AOfficeInstance");
+        if(funcPtr != NULL) {
+                Log(5) << "libaofficeconnector-transform loading..." << endl;
+                AO::OfficeTransformProvider* (*libFunc)( ) = reinterpret_cast<AO::OfficeTransformProvider* (*)( )>(funcPtr);
+                AO::OfficeTransformProvider* otpObj = libFunc();
+
+                otpObj->SetSourceName( infilename );
+                otpObj->SetTargetName( outfilename );
+                otpObj->SetTargetType( tType );
+                if( !otpObj->FileTransform() ) {
+                        Log(2) << "Error in FileTransform..." << endl;
+                }
+                delete otpObj;
+        }
+
+        BlobFile result;
+        result.SetFileName(dName+"_stamped.pdf");
+        result.SetExpireTime(SimpleThread::GetCurrentContext().GUserTime());
+
+        AUTHORIZER::Token user( SimpleThread::GetCurrentContext().GUserID() );
+        user.Select(rdb_ );
+        Effi::Value textStamp;
+        textStamp["static"][0]="ДОКУМЕНТ";
+        textStamp["sign"][0] = string("Распечатал: ")+user.TokenName.get_value_or("");
+        textStamp["sign"][1] = "";
+        textStamp["sign"][2] = ToString(SimpleThread::GetCurrentContext().GUserTime());
+
+        Effi::Blob infile=ReadFile(outfilename);
+        Effi::ShPtr<Effi::StampToPDF> spdf;
+        spdf = new Effi::StampToPDF(infile);
+        spdf->SetTextStamp(textStamp);
+        Effi::Blob outFile = spdf->Process();
+
+        result.Content() = outFile;
+
+        return result;
+}
+
+const Value GPNEStatus::EStatusNextListGet( const Int StatusID ) {
+	return EStatusListGet();
 }
 
 }
