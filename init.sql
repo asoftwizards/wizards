@@ -32,12 +32,8 @@ INSERT INTO `Member` ( TokenID, ChildTokenID, UserArc, DateArc ) VALUES
 ( 1, 100110034, -1, '0000-00-00 00:00:00' ),
 ( 1, 100110035, -1, '0000-00-00 00:00:00' );
 
-INSERT INTO `Organization` ( Name, Address, LAddress, IsExecuter, IsProducer, IsShipper, UserArc, DateArc ) VALUES
-( 'Подрядная организация', '1', '1', 'true', 'false', 'false', -1, '0000-00-00 00:00:00' ),
-( 'Производитель', '1', '1', 'false', 'true', 'false', -1, '0000-00-00 00:00:00' ),
-( 'Поставщик', '1', '1', 'false', 'false', 'true', -1, '0000-00-00 00:00:00' );
+INSERT INTO `Organization` ( Name, Address, LAddress, UserArc, DateArc ) VALUES
+( 'ООО Успех', '1', '1', -1, '0000-00-00 00:00:00' );
 
-INSERT INTO `EquipmentKind` (Kind, Name, ProducerOrgID, UserArc, DateArc ) VALUES
-( 'gate_valves', 'Задвижка', '3','-1','0000-00-00 00:00:00'),
-( 'pomp', 'Насос', '3','-1','0000-00-00 00:00:00'),
-( 'umbilical_cable', 'Шлангокабель', '3','-1','0000-00-00 00:00:00');
+INSERT INTO `EquipmentKind` (Kind, Name, UserArc, DateArc ) VALUES
+( 'pomp', 'Насос','-1','0000-00-00 00:00:00');

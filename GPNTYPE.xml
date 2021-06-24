@@ -16,14 +16,8 @@
                         <item id="ACTIVE_ATTR" value="Действующий" label="Действующий" icon="/images/const_method.gif" />
                         <item id="ARCHIVE_ATTR" value="Архив" label="Архив" icon="/images/delete_method.gif" />
                 </type>
-		<type id="POINT_TYPE" parent="ENUM" Name="Тип точки" >
-			<item id="WELL" value="well" label="Скважина" />
-			<item id="LAND" value="land" label="Наземная" />
-		</type>
 		<type id="EQUIP_KIND" parent="ENUM" Name="Оборудование" >
-			<item id="UMBILICAL_CABLE" value="umbilical_cable" label="Шлангокабель" />
 			<item id="POMP" value="pomp" label="Насос" />
-			<item id="GATE_VALVES" value="gate_valves" label="Задвижка" />
 		</type>
 		<type id="EQUIPMENT_STATUS" parent="ENUM" Name="Статус оборудования" >
 			<item id="STORED" value="stored" label="На складе" />
