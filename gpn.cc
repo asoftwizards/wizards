@@ -337,7 +337,7 @@ const Value GPNGPNUser::GPNUserListGet( const optional<Int> OrgID ) {
 	return res;
 }
 
-const Value GPNEquipment::EquipmentMenuListGet(const optional<Int> EquipKindID ) {
+const Value GPNEquipment::EquipmentMenuListGet(const optional<Int> EquipKindID) {
 	Data::DataList lr;
 	lr.AddColumn("EquipID", Data::INTEGER);
 	lr.AddColumn("ETypeKind", Data::STRING, EQUIP_KINDValues());
@@ -360,7 +360,8 @@ const Value GPNEquipment::EquipmentMenuListGet(const optional<Int> EquipKindID )
 	sel << aEquipment->EquipID << aEquipment->InvNumber << aEquipment->EStatus << aEquipment->EState
 		 << aEType->Kind << aEType->Name;
 	sel.Where(aEquipment->EquipKindID==aEType->EquipKindID &&
-		 ( Defined(EquipKindID) ? aEquipment->EquipKindID==*EquipKindID : Expression()) );
+		 ( Defined(EquipKindID) ? aEquipment->EquipKindID==*EquipKindID : Expression()) &&
+		 ( IsNotNull( GOrganization ) ? aEquipment->OwnerOrgID == GOrganization : Expression() ));
 	DataSet data=sel.Execute(rdb_);
 	while(data.Fetch()) lr.AddRow();
 	Value res=lr;

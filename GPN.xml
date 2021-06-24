@@ -170,7 +170,7 @@
 			<field id="ContractID" />
 			<elem wnd="ContractGet" args="ContractID" title="General" />
 			<elem wnd="EquipmentPointList" args="ContractID" title="Скважины" />
-			<elem wnd="EquipmentList" args="ContractID" title="Оборудование" />
+			<elem wnd="EquipmentList" args="OwnerOrgID=ExecuterOrgID" title="Оборудование" />
 		</folder>
 		<method id="ContractListGet" >
 			<arg field="ExecuterOrgID" optional="yes" />
@@ -266,8 +266,6 @@
 		</fields>
                 <view id="EquipmentList" title="Оборудование" exclude="AddEquipment" >
                         <column field="EquipID" ret="yes"/>
-                        <column field="ContractID" class="Contract" alias="mcp" />
-                        <column field="Name" class="Contract" alias="mcp" />
                         <column field="Kind" class="EquipmentKind" alias="EType" title="Оборудование" />
                         <column field="Name" class="EquipmentKind" alias="EType" title="Оборудование" />
                         <column field="InvNumber" />
@@ -325,6 +323,18 @@
 		</view>
 	</class>
 
+	<class id="LifeCycle" >
+		<fields>	
+			<CycleID type="ID" key="sk" title="Код" hidden="yes" />
+			<Equipment title="Оборудование" />
+			<Status type="EQUIPMENT_STATUS" title="Статус" notnull="yes" />
+			<State type="EQUIPMENT_STATE" title="Состояние" notnull="yes" />
+			<BDate type="TIMESTAMP" title="Начало" notnull="yes"/>
+			<EDate type="TIMESTAMP" title="Окончание" notnull="yes"/>
+		</fields>
+	</class>
+
+
 	<class id="Integration" virtual="yes" >
 		<fields>
 			
@@ -350,9 +360,8 @@
 		<elem id="Reports" title="Отчеты" >
 		</elem>
 		<elem id="Books" title="Справочники" >
-			<elem id="OrgsBook" title="Организации" >
 				<elem id="Executers" title="Подрядные организации" src="/act/GPN/OrganizationList" />
-			</elem>
+				<elem id="Users" title="Пользователи" src="/act/GPN/GPNUserList" />
 			<elem id="EquipmentsBook" title="Оборудование" >
 				<elem id="PompsBook" title="Насосы" src="/act/GPN/PompMenuList" />
 			</elem>

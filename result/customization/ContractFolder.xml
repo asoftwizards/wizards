@@ -1,0 +1,6 @@
+<wnd xmlns="http://www.asoft.ru/xsl/ai" id="ContractFolder" class="TabBar" title="``">
+	<ele id="ExecuterOrgID"  type="ID" />
+	<a id="Init">
+		<call aid='m1' meth="/srv/GPN/Contract/Get" args="ContractID" rets="ExecuterOrgID"/>
+	</a>
+</wnd>
