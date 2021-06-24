@@ -21,8 +21,11 @@
 		</type>
 		<type id="EQUIPMENT_STATUS" parent="ENUM" Name="Статус оборудования" >
 			<item id="STORED" value="stored" label="На складе" />
-			<item id="TRANSPORTED" value="transported" label="Транспортируется" />
+			<item id="TRANSPORTED_TO_STORE" value="trans_to_store" label="Транспортируется на базу" />
+			<item id="INSTALLATION" value="installation" label="Монтаж" />
 			<item id="USED" value="used" label="Используется" />
+			<item id="DISMANTLING" value="dismantling" label="Демонтаж" />
+			<item id="TRANSPORTED_TO_WELL" value="trans_to_well" label="Транспортируется на скважину" />
 			<item id="REPAIR" value="repair" label="На ремонте" />
 		</type>
 		<type id="EQUIPMENT_STATE" parent="ENUM" Name="Состояние оборудования" >
