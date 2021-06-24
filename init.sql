@@ -16,12 +16,15 @@ call AddPrivileges(1,'GPN','*','*',1,1,1,1,1,1);
 call AddPrivileges(2,'GPN','*','*',1,1,1,1,1,1);
 
 -- Token
+INSERT INTO `Organization` ( Name, Address, LAddress, UserArc, DateArc ) VALUES
+( 'Газпром', '1', '1', -1, '0000-00-00 00:00:00' );
+
 INSERT INTO `Token` (TokenID, TokenName, TokenStatus, UserArc, DateArc, TokenType) VALUES 
 (100110034,'Корупаева Марина Юрьевна','enabled',NULL,'0000-00-00 00:00:00','Users'),
 (100110035,'Титова Нина Сергеевна','enabled',NULL,'0000-00-00 00:00:00','Users');
-INSERT INTO `GPNUser` (TokenID, LastName, FirstName, SecondName, UStatus, UserArc, DateArc) VALUES 
-(100110034,'Корупаева', 'Марина', 'Юрьевна','Активный',NULL,'0000-00-00 00:00:00'),
-(100110035,'Титова', 'Нина', 'Сергеевна','Активный',NULL,'0000-00-00 00:00:00');
+INSERT INTO `GPNUser` (TokenID, LastName, FirstName, SecondName, OrgID, UStatus, UserArc, DateArc) VALUES 
+(100110034,'Корупаева', 'Марина', 'Юрьевна', '1','Активный',NULL,'0000-00-00 00:00:00'),
+(100110035,'Титова', 'Нина', 'Сергеевна', '1','Активный',NULL,'0000-00-00 00:00:00');
 
 -- Users
 INSERT INTO `Users` (TokenID, Login, Password, UserArc, DateArc) VALUES 
@@ -32,8 +35,6 @@ INSERT INTO `Member` ( TokenID, ChildTokenID, UserArc, DateArc ) VALUES
 ( 1, 100110034, -1, '0000-00-00 00:00:00' ),
 ( 1, 100110035, -1, '0000-00-00 00:00:00' );
 
-INSERT INTO `Organization` ( Name, Address, LAddress, UserArc, DateArc ) VALUES
-( 'ООО Успех', '1', '1', -1, '0000-00-00 00:00:00' );
 
 INSERT INTO `EquipmentKind` (Kind, Name, UserArc, DateArc ) VALUES
 ( 'pomp', 'Насос','-1','0000-00-00 00:00:00');

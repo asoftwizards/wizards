@@ -5,13 +5,14 @@
 	<embed filename="GPNTYPE.xml"/>
 	<parent filename="/usr/local/effi/include/Services/Authorizer/AUTHORIZER.xml"/>
 
-	<class id="GPNUser" title="Пользователь" >
+	<class id="GPNUser" title="Сотрудник" >
 		<fields>
                         <TokenID type="LONG" key="pk" title="Код пользователя"/>
                         <LastName type="NAME" title="Фамилия" notnull="yes"/>
                         <FirstName type="NAME" title="Имя" notnull="yes"/>
                         <SecondName type="NAME" title="Отчество"/>
 			<UStatus type="USER_STATUS" title="Статус" notnull="yes"/>
+			<Organization title="Организация" notnull="yes" />
 
 			<FullName type="NAME" title="ФИО" virtual="yes" />
 			<Groups type="NAME" title="Группы доступа" virtual="yes" />
@@ -26,6 +27,7 @@
 			<ret field="LastName" />
 			<ret field="FirstName" />
 			<ret field="SecondName" />
+			<ret field="Name" class="Organization" />
 			<ret field="Login" />
 			<ret field="GroupsList" />
 			<ret field="UStatus" />
@@ -35,6 +37,7 @@
 			<field id="LastName"/>
 			<field id="FirstName"/>
 			<field id="SecondName"/>
+			<field id="Name" class="Organization" />
 			<field id="Login"/>
 			<field id="GroupsList"/>
 			<field id="UStatus"/>
@@ -52,6 +55,7 @@
 			<arg field="LastName" />
 			<arg field="FirstName" />
 			<arg field="SecondName" />
+			<arg field="OrgID" />
 			<arg field="Login" />
 			<arg field="Password" />
 			<arg field="PasswordConfirm"/>
@@ -62,6 +66,7 @@
 			<arg field="LastName" optional="yes" />
 			<arg field="FirstName" optional="yes" />
 			<arg field="SecondName" optional="yes" />
+			<arg field="OrgID" optional="yes" />
 			<arg field="Login" optional="yes" />
 <!--			<arg field="Password" optional="yes" />
 			<arg field="PasswordConfirm" optional="yes" /> -->
@@ -73,6 +78,7 @@
 			<field id="LastName"/>
 			<field id="FirstName"/>
 			<field id="SecondName"/>
+			<field id="Organization" />
 			<field id="Login"/>
 			<field id="GroupsList"/>
 			<field id="UStatus"/>
@@ -92,6 +98,7 @@
 			<arg field="LastName"/>
 			<arg field="FirstName"/>
 			<arg field="SecondName"/>
+			<arg field="Organization" />
 			<arg field="Login"/>
 			<arg field="Password"/>
 			<arg field="PasswordConfirm"/>
@@ -104,10 +111,13 @@
 		<method id="Block" >
 			<arg field="TokenID" />
 		</method>
-		<method id="GPNUserListGet" />
-		<view id="GPNUserList" title="Пользователи">
+		<method id="GPNUserListGet" >
+			<arg field="OrgID" optional="yes" />
+		</method>
+		<view id="GPNUserList" title="Сотрудники">
 			<column field="TokenID" ret="yes" />
 			<column field="FullName" />
+			<column field="Name" class="Organization" />
 			<column field="Login" />
 			<column field="Groups" />
 			<column field="UStatus" />
@@ -156,14 +166,16 @@
 
 			<Executer ref="Organization" title="Подрядная организация" />
 		</fields>
-		<folder id="ContractFolder" title="Проект">
+		<folder id="ContractFolder" title="Договор">
 			<field id="ContractID" />
 			<elem wnd="ContractGet" args="ContractID" title="General" />
-			<elem wnd="EquipmentPointList" args="ContractID" title="Точки оборудования" />
+			<elem wnd="EquipmentPointList" args="ContractID" title="Скважины" />
 			<elem wnd="EquipmentList" args="ContractID" title="Оборудование" />
-			<elem wnd="CalculationList" args="ContractID" title="Расчеты" />
 		</folder>
-		<view id="ContractList" title="Проекты" >
+		<method id="ContractListGet" >
+			<arg field="ExecuterOrgID" optional="yes" />
+		</method>
+		<view id="ContractList" title="Договор" >
 			<column field="ContractID" ret="yes" />
 			<column field="Name" ret="yes" />
 			<column field="BDate" />
@@ -313,6 +325,16 @@
 		</view>
 	</class>
 
+	<class id="Integration" virtual="yes" >
+		<fields>
+			
+		</fields>
+		<wnd id="Integration1C" title="1С">
+		</wnd>
+		<wnd id="IntegrationMehfond" title="ЭРА:Мехфонд">	
+		</wnd>
+	</class>
+
 <menu id="MainMenu">
 	<elem id="TreeRoot" title="GPN" >
 		<elem id="Contracts" title="Договора подряда" >
@@ -320,6 +342,10 @@
 		</elem>
 		<elem id="Equipments" title="Оборудование" >
 			<elem id="EStore" title="Оборудование" src="/act/GPN/EquipmentMenuList"/>
+		</elem>
+		<elem id="Intergartion" title="Интеграция" >
+			<elem id="Int1C" title="1C" src="/act/GPN/Integration1C"/>
+			<elem id="IntMehfond" title="ЭРА:Мехфонд" src="/act/GPN/IntegrationMehfond"/>
 		</elem>
 		<elem id="Reports" title="Отчеты" >
 		</elem>

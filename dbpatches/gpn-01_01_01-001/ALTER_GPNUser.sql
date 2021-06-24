@@ -1,0 +1,2 @@
+ALTER TABLE GPNUser ADD OrgID INT NOT NULL COMMENT 'Код организации';
+ALTER TABLE GPNUserArc ADD OrgID INT NOT NULL COMMENT 'Код организации';

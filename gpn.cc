@@ -20,11 +20,22 @@ string getFullName(const GPNUser& user) {
                 Trim(user.SecondName.get_value_or("")));
 }
 
+Int GOrgID( ) {
+	Int GUserID = SimpleThread::GetCurrentContext().GUserID();
+	GPNUser aUser;
+	aUser.TokenID=GUserID;
+	aUser.Select(rdb_);       
+	return aUser.OrgID;
+
+}
+
 const Value GPNGPNUser::Get(const Int64 TokenID) {
 	Value res;
 	GPNUser aGPNUser;
 	aGPNUser.TokenID=TokenID;
 	aGPNUser.Select(rdb_);
+	Organization aOrganization( aGPNUser.OrgID );
+	aOrganization.Select( rdb_ );
 	AUTHORIZER::Users user;
 	user.TokenID = TokenID;
 	user.Select( rdb_ );
@@ -32,6 +43,7 @@ const Value GPNGPNUser::Get(const Int64 TokenID) {
 	res["LastName"]=aGPNUser.LastName;
 	res["FirstName"]=aGPNUser.FirstName;
 	res["SecondName"]=aGPNUser.SecondName;
+	res["Name"]=aOrganization.Name;
 	res["Login"]=user.Login;
 	res["UStatus"]=aGPNUser.UStatus;
 
@@ -56,7 +68,8 @@ const Value GPNGPNUser::Get(const Int64 TokenID) {
 }
 
 
-const Value GPNGPNUser::Add( const Str LastName, const Str FirstName, const Str SecondName, const Str Login, const Str Password, const Str PasswordConfirm, const Value GroupsList ) {
+const Value GPNGPNUser::Add( const Str LastName, const Str FirstName, const Str SecondName, const Int OrgID,
+			 const Str Login, const Str Password, const Str PasswordConfirm, const Value GroupsList ) {
 
 	// генерим TokenID
 	int64_t TokenID;
@@ -80,7 +93,7 @@ const Value GPNGPNUser::Add( const Str LastName, const Str FirstName, const Str 
                 ++TokenID;
         }
 
-        AddWithTokenID ((Int64)TokenID, LastName, FirstName, SecondName, Login, Password, PasswordConfirm, GroupsList );
+        AddWithTokenID ((Int64)TokenID, LastName, FirstName, SecondName, OrgID, Login, Password, PasswordConfirm, GroupsList );
 
         Value res;
         res ["TokenID"] = (int64_t)TokenID;
@@ -97,7 +110,7 @@ const Value GPNGPNUser::Add( const Str LastName, const Str FirstName, const Str 
         return res;
 }
 
-const Value GPNGPNUser::AddWithTokenID (const Int64 TokenID, const Str LastName, const Str FirstName, const Str SecondName,
+const Value GPNGPNUser::AddWithTokenID (const Int64 TokenID, const Str LastName, const Str FirstName, const Str SecondName, const Int OrgID,
 					 const Str Login, const Str Password, const Str PasswordConfirm, const Value GroupsList) {
         if(Undefined(LastName) || LastName->empty())
                 throw Exception("Укажите Фамилию Пользователя. ");
@@ -123,6 +136,7 @@ const Value GPNGPNUser::AddWithTokenID (const Int64 TokenID, const Str LastName,
         au.LastName=LastName;
         au.FirstName=FirstName;
         au.SecondName=SecondName;
+	au.OrgID = OrgID;
         au.UStatus=USER_ACTIVE;
         string fullName=getFullName(au);
         au.Insert(rdb_);
@@ -160,7 +174,7 @@ const Value GPNGPNUser::AddWithTokenID (const Int64 TokenID, const Str LastName,
 }
 
 const Value GPNGPNUser::Update(const Int64 TokenID, const optional<Str> LastName, const optional<Str> FirstName, const optional<Str> SecondName,
-				const optional<Str> Login, const optional<Value> GroupsList, const optional<Str> UStatus) {
+				const optional<Int> OrgID, const optional<Str> Login, const optional<Value> GroupsList, const optional<Str> UStatus) {
 	Exception e((Message("Cannot update ") << Message("Пользователь").What() << ". ").What());
 	try {
 		GPNUser aGPNUser;aGPNUser.TokenID=TokenID;aGPNUser.Select(rdb_);
@@ -178,6 +192,9 @@ const Value GPNGPNUser::Update(const Int64 TokenID, const optional<Str> LastName
 		if(Defined(SecondName)) {
 			aGPNUser.SecondName=*SecondName;
 			FIOIsChanged = true;
+		}
+		if( Defined( OrgID ) ) {
+			aGPNUser.OrgID = *OrgID;
 		}
 		if(Defined(UStatus)) aGPNUser.UStatus=*UStatus;
 		aGPNUser.Update(rdb_);
@@ -264,20 +281,23 @@ const Value GPNGPNUser::Block ( const Int64 TokenID ) {
 	return ValueNULL;
 }
 
-const Value GPNGPNUser::GPNUserListGet() {
+const Value GPNGPNUser::GPNUserListGet( const optional<Int> OrgID ) {
 	Data::DataList lr;
 	lr.AddColumn("TokenID", Data::INT64);
 	lr.AddColumn("FullName", Data::STRING);
+	lr.AddColumn("Name", Data::STRING );
 	lr.AddColumn("Login", Data::STRING);
 	lr.AddColumn("Groups", Data::STRING);
 	lr.AddColumn("UStatus", Data::STRING, USER_STATUSValues() );
 	GPNUser aGPNUser;
+	Organization aOrganization;
 	AUTHORIZER::Token token;
 	AUTHORIZER::Users user;
 	string FullName;
 	string Groups;
 	lr.Bind(aGPNUser.TokenID, "TokenID");
 	lr.Bind(FullName, "FullName");
+	lr.Bind(aOrganization.Name, "Name");
 	lr.Bind(user.Login, "Login");
 	lr.Bind(Groups, "Groups");
 	lr.Bind(aGPNUser.UStatus, "UStatus");
@@ -303,8 +323,10 @@ const Value GPNGPNUser::GPNUserListGet() {
 
 	Selector sel;
 	sel << aGPNUser->TokenID << aGPNUser->LastName << aGPNUser->FirstName << aGPNUser->SecondName 
-		<< user->Login <<aGPNUser->UStatus;
-	sel.Where( aGPNUser->TokenID == user->TokenID );
+		<< aOrganization->Name << user->Login <<aGPNUser->UStatus;
+	sel.From(aGPNUser).LeftJoin( aOrganization ).On( aGPNUser->OrgID == aOrganization->OrgID )
+		.Join( user ).On( aGPNUser->TokenID == user->TokenID );
+	sel.Where( (Defined( OrgID ) ? aGPNUser->OrgID == *OrgID: Expression() ) );
 	DataSet data=sel.Execute(rdb_);
 	while(data.Fetch()) {
         	FullName=getFullName(aGPNUser);
@@ -331,6 +353,9 @@ const Value GPNEquipment::EquipmentMenuListGet(const optional<Int> EquipKindID )
 	lr.Bind(aEquipment.InvNumber, "InvNumber");
 	lr.Bind(aEquipment.EStatus, "EStatus");
 	lr.Bind(aEquipment.EState, "EState");
+
+	Int GOrganization = GOrgID();
+
 	Selector sel;
 	sel << aEquipment->EquipID << aEquipment->InvNumber << aEquipment->EStatus << aEquipment->EState
 		 << aEType->Kind << aEType->Name;
@@ -342,5 +367,30 @@ const Value GPNEquipment::EquipmentMenuListGet(const optional<Int> EquipKindID )
 	return res;
 }
 
+const Value GPNContract::ContractListGet(const optional<Int> ExecuterOrgID) {
+	Data::DataList lr;
+	lr.AddColumn("ContractID", Data::INTEGER);
+	lr.AddColumn("Name", Data::STRING);
+	lr.AddColumn("BDate", Data::DATETIME);
+	lr.AddColumn("EDate", Data::DATETIME);
+	lr.AddColumn("executerName", Data::STRING);
+	Contract aContract;
+	Organization aexecuter;
+	lr.Bind(aContract.ContractID, "ContractID");
+	lr.Bind(aContract.Name, "Name");
+	lr.Bind(aContract.BDate, "BDate");
+	lr.Bind(aContract.EDate, "EDate");
+	lr.Bind(aexecuter.Name, "executerName");
+	Int GOrganization = GOrgID();
+	Selector sel;
+	sel << aContract->ContractID << aContract->Name << aContract->BDate << aContract->EDate << aexecuter->Name;
+	sel.LeftJoin(aexecuter).On(aContract->ExecuterOrgID==aexecuter->OrgID);
+	sel.Where( (Defined(ExecuterOrgID) ? aContract->ExecuterOrgID==*ExecuterOrgID : Expression()) &&
+			( IsNotNull(GOrganization) ? aContract->ExecuterOrgID == GOrganization: Expression() ));
+	DataSet data=sel.Execute(rdb_);
+	while(data.Fetch()) lr.AddRow();
+	Value res=lr;
+	return res;
+}
 
 }
