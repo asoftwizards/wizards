@@ -1,5 +1,5 @@
 #include "gpn.h"
-#include "stamppdf.h"
+//#include "stamppdf.h"
 
 #include "Services/Authorizer/authorizer_auto.h"
 //#include "aofficeconnector-transform.h"

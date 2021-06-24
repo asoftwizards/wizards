@@ -22,7 +22,7 @@ add_definitions(-DCPPU_ENV=gcc4)
 add_definitions(-DUNX -DSAL_UNX)
 
 
-add_library (GPN gpn.cc scheme.h scheme.cc gpn_auto.h gpn_auto.cc stamppdf.h stamppdf.cc)
+add_library (GPN gpn.cc scheme.h scheme.cc gpn_auto.h gpn_auto.cc )
 target_link_libraries (GPN -lReporter -ldbservice -ldatalist -lEvent -lAuthorizer -lacommon -lqpdf -lgd -fPIC)
 
 # libraries

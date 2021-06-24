@@ -226,7 +226,7 @@
                         <DocFile type="FILE" title="Файл" virtual="yes"/>
                         <DocsArray type="VALUE" virtual="yes" hide="yes"/>
                         <Download type="DOWNLOAD" label="Сохранить" visibility="yes" src="/file/ABEA/Documents/Download" virtual="yes" defer="yes"/>
-                        <PrintDoc type="DOWNLOAD" label="Печать" visibility="yes" src="/file/ABEA/Documents/PrintDoc" virtual="yes" defer="yes"/>
+<!--                        <PrintDoc type="DOWNLOAD" label="Печать" visibility="yes" src="/file/ABEA/Documents/PrintDoc" virtual="yes" defer="yes"/> -->
                 </fields>
                 <method id="Add" >
                         <arg field="DocFile" />
@@ -240,9 +240,9 @@
                 <method id="Download" >
                         <arg field="DocID" />
                 </method>
-                <method id="PrintDoc" >
+<!--                <method id="PrintDoc" >
                         <arg field="DocID" />
-                </method>
+                </method> -->
                 <method id="DocumentsByEquipListGet" >
                         <arg field="EquipID" />
                 </method>
