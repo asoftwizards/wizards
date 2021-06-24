@@ -2,7 +2,7 @@
 #include "stamppdf.h"
 
 #include "Services/Authorizer/authorizer_auto.h"
-#include "aofficeconnector-transform.h"
+//#include "aofficeconnector-transform.h"
 #include "dynwin/dynwin.h"
 
 
@@ -501,7 +501,7 @@ const Value GPNDocuments::Delete(const Value DocsArray ) {
 
 
 
-const Value GPNDocuments::PrintDoc(const Int DocID ) {
+/*const Value GPNDocuments::PrintDoc(const Int DocID ) {
         Documents aRecord( DocID );
         aRecord.Select( rdb_ );
 
@@ -565,7 +565,7 @@ const Value GPNDocuments::PrintDoc(const Int DocID ) {
 
         return result;
 }
-
+*/
 const Value GPNEStatus::EStatusNextListGet( const Int StatusID ) {
 	return EStatusListGet();
 }
