@@ -1,11 +1,16 @@
 <wnd xmlns="http://www.asoft.ru/xsl/ai" id="EquipmentFolder" class="TabBar" title="``">
 	<ele class="Tab" id="DocumentsList" label="`Документы`" hide="yes"/>
+	<ele class="Tab" id="EquipEventJournalList" label="`Журнал событий`"/>
+	<a id="EquipEventJournalList">
+		<ele aid="c1" id="WorkSpace" src="/act/GPN/EquipEventJournalList" args="EquipID=EquipID "/>
+	</a>
 	<lay>
 		<grid id="gt" class="TabBarGrid">
 			<row id="rt">
 				<cell id="ct1" class="TabBarCell">
 					<ele id="EquipmentGet"/>
 					<ele id="DocumentsList" hide="yes" />
+					<ele id="EquipEventJournalList"/>
 				</cell>
 			</row>
 		</grid>

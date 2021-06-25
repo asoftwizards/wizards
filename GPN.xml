@@ -198,6 +198,11 @@
 			<Y type="DOUBLE" notnull="yes" title="Широта" min="-90" max="90" decimal-accuracy="10" />
 			<H type="DOUBLE" title="Глубина" />
 		</fields>
+		<folder id="EquipmentPointFolder" >
+			<field id="PointID" />
+			<elem wnd="EquipmentPointGet" args="PointID" title="Скважина"/>
+			<elem wnd="EPointEventJournalList" args="PointID" title="Журнал событий" />
+		</folder>
 		<view id="EquipmentPointList" title="Скважина" >
 			<column field="PointID" ret="yes" />
 			<column field="Name" ret="yes" />
@@ -268,6 +273,7 @@
 			<Name type="NAME" title="Модель" />
 		</fields>
 		<folder id="EquipmentKindFolder" title="Тип оборудования">
+			<field id="EquipKindID" />
 			<elem wnd="EquipmentKindGet" args="EquipKindID" title="General"/>
 		</folder>
 		<view id="EquipmentKindList" title="Типы оборудования" >
@@ -276,7 +282,7 @@
 		</view>
 		<view id="PompMenuList" title="Насосы" >
 			<column field="EquipKindID" ret="yes" />
-			<column field="Name" />
+			<column field="Name" ret="yes" />
 			<select>
 				<and left-field="Kind" compare="=" literal="POMP" />
 			</select>
@@ -312,12 +318,16 @@
 			<Owner ref="Organization" notnull="yes" title="Собственник" />
 
 		</fields>
+		<method id="Delete" >
+			<arg field="EquipID" />
+		</method>
                 <view id="EquipmentList" title="Оборудование" exclude="AddEquipment" >
                         <column field="EquipID" ret="yes"/>
                         <column field="Kind" class="EquipmentKind" alias="EType" title="Оборудование" />
                         <column field="Name" class="EquipmentKind" alias="EType" title="Оборудование" />
                         <column field="InvNumber" />
 			<column field="Name" class="EStatus" />
+			<column field="EState" />
 
                         <select>
 				<and left-field="EquipKindID" compare="=" right-alias="EType" right-class="EquipmentKind" right-field="EquipKindID" />
@@ -352,12 +362,6 @@
 			<Power type="DOUBLE" notnull="yes" title="Мощность" />
 			<Capacity type="INT" notnull="yes" title="Производительность" />
 		</fields>
-<!--		<method id="Add" >
-			<arg field="InvNumber" />
-			<arg field="Power" />
-			<arg field="Capacity" />
-			<ret field="EquipID" />
-		</method> -->
 		<view id="PompList" title="Насосы" exclude="AddPomp Delete ">
 			<column field="EquipID" />
 			<column field="EquipKindID" class="EquipmentKind" alis="EKind" />
@@ -450,15 +454,55 @@
 
 	</class>
 
-	<class id="LifeCycle" >
+	<class id="EventJournal" title="Журнал событий" >
 		<fields>	
-			<CycleID type="ID" key="sk" title="Код" hidden="yes" />
+			<EventID type="ID" key="sk" title="Код" hidden="yes" />
 			<Equipment title="Оборудование" />
-			<Status type="EQUIPMENT_STATUS" title="Статус" notnull="yes" />
+			<EquipmentPoint title="Скважина" />
+			<EStatus title="Статус" notnull="yes" />
 			<State type="EQUIPMENT_STATE" title="Состояние" notnull="yes" />
-			<BDate type="TIMESTAMP" title="Начало" notnull="yes"/>
-			<EDate type="TIMESTAMP" title="Окончание" notnull="yes"/>
+			<Note type="STR500" title="Обоснование"/>
+			<EventDate type="TIMESTAMP" title="Дата события" notnull="yes"/>
+			<GPNUser title="Сотрудник" notnull="yes" />
 		</fields>
+		<method id="EquipEventJournalListGet" >
+			<arg field="EquipID" />
+		</method>
+		<view id="EquipEventJournalList" title="Журнал событий" exclude="AddEventJournal Delete" >
+			<column field="EventID" />
+			<column field="Name" class="EStatus" alias="es" />
+			<column field="State" />
+			<column field="Name" class="EquipmentPoint" alias="ep" title="Скважина"/>
+			<column field="EventDate" />
+			<column field="TokenID" />
+			<column field="FullName" class="GPNUser" />
+			<column field="Note" />
+<!--                        <left-join with="EquipmentPoint" alias="ep">
+                                <and left-field="PointID" compare="=" right-alias="ep" right-class="EquipmentPoint" right-field="PointID" />
+			</left-join>
+			<select>
+				<and left-field="StatusID" compare="=" right-alias="es" right-class="EStatus" right-field="StatusID" />
+			</select> -->
+		</view>
+		<method id="EPointEventJournalListGet" >
+			<arg field="PointID" />
+		</method>
+		<view id="EPointEventJournalList" title="Журнал событий" exclude="AddEventJournal Delete" >
+			<column field="EventID" />
+			<column field="Kind" class="EquipmentKind" alias="ek"/>
+			<column field="Name" class="EquipmentKind" alias="ek"/>
+			<column field="Name" class="EStatus" alias="es" />
+			<column field="State" />
+			<column field="EventDate" />
+			<column field="TokenID" />
+			<column field="FullName" class="GPNUser" />
+			<column field="Note" />
+<!--                        <select>
+                                <and left-field="EquipID" compare="=" right-class="Equipment" right-field="EquipID" />
+                                <and left-field="EquipKindID" left-class="Equipment" compare="=" right-class="EquipmentKind" right-alias="ek" right-field="EquipKindID" />
+				<and left-field="StatusID" compare="=" right-alias="es" right-class="EStatus" right-field="StatusID" />
+			</select> -->
+		</view>
 	</class>
 
 
