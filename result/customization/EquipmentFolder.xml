@@ -1,9 +1,11 @@
 <wnd xmlns="http://www.asoft.ru/xsl/ai" id="EquipmentFolder" class="TabBar" title="``">
+	<ele class="Tab" id="DocumentsList" label="`Документы`" hide="yes"/>
 	<lay>
 		<grid id="gt" class="TabBarGrid">
 			<row id="rt">
 				<cell id="ct1" class="TabBarCell">
 					<ele id="EquipmentGet"/>
+					<ele id="DocumentsList" hide="yes" />
 				</cell>
 			</row>
 		</grid>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wnd xmlns="http://www.asoft.ru/xsl/ai" id="PompUpdate" class="generic" title="`Насос`">
+  <lay>
+    <grid id="DocumentGrid" heightLimit="80%">
+      <row id="DocFile">
+        <cell id="DocFile_label" labelfor="DocFile" text="`Файл`"/>
+        <cell id="DocFile">
+          <ele id="DocFile"/>
+        </cell>
+      </row>
+      <row id="DocumentGrid">
+        <cell id="DocumentGrid">
+          <ele id="AddDoc"/>
+          <ele id="DelDoc"/>
+        </cell>
+      </row>
+      <row id="DocumentsList">
+        <cell colspan="2" id="DocumentsList">
+          <ele id="DocumentsList"/>
+        </cell>
+      </row>
+    </grid>
+  </lay>
+</wnd>

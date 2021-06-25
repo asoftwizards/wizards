@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wnd xmlns="http://www.asoft.ru/xsl/ai" id="PompAdd" class="generic" title="`Насос`">
+  <lay>
+	<grid id="General">
+      <row id="Equipment" visibility="no">
+      </row>
+    </grid>
+  </lay>
+</wnd>

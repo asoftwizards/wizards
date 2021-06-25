@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <wnd xmlns="http://www.asoft.ru/xsl/ai" id="PompGet" class="generic" title="`Насос`">
  <lay>
-    <grid id="DocumentsGrid" heightLimit="100%">
+    <grid id="General">
+      <row id="Equipment" visibility="no">
+      </row>
+    </grid>
+    <grid id="BGeneral" class="DialogButtons" >
+      <row id="BGeneral">
+        <cell id="BGeneral">
+          <ele id="Edit"/>
+          <ele id="Cancel"/>
+        </cell>
+      </row>
+    </grid>
+    <grid id="DocumentsGrid" heightLimit="80%" >
       <row id="Download">
         <cell id="Download" colspan="2">
           <ele id="Download"/>

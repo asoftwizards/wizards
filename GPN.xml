@@ -225,8 +225,7 @@
 
                         <DocFile type="FILE" title="Файл" virtual="yes"/>
                         <DocsArray type="VALUE" virtual="yes" hide="yes"/>
-                        <Download type="DOWNLOAD" label="Сохранить" visibility="yes" src="/file/ABEA/Documents/Download" virtual="yes" defer="yes"/>
-<!--                        <PrintDoc type="DOWNLOAD" label="Печать" visibility="yes" src="/file/ABEA/Documents/PrintDoc" virtual="yes" defer="yes"/> -->
+                        <Download type="DOWNLOAD" label="Скачать документ" visibility="yes" src="/file/GPN/Documents/Download" virtual="yes" defer="yes"/>
                 </fields>
                 <method id="Add" >
                         <arg field="DocFile" />
@@ -262,12 +261,15 @@
  </class>
 
 
-	<class id="EquipmentKind" title="Типы оборудования" >
+	<class id="EquipmentKind" title="Тип оборудования" >
 		<fields>
 			<EquipKindID type="ID" key="sk" title="Код типа оборудования" hidden="yes" />
 			<Kind type="EQUIP_KIND" title="Тип оборудования" />
 			<Name type="NAME" title="Модель" />
 		</fields>
+		<folder id="EquipmentKindFolder" title="Тип оборудования">
+			<elem wnd="EquipmentKindGet" args="EquipKindID" title="General"/>
+		</folder>
 		<view id="EquipmentKindList" title="Типы оборудования" >
 			<column field="EquipKindID" ret="yes" />
 			<column field="Name" ret="yes" />
@@ -386,9 +388,6 @@
                         <button id="Cancel" title="Cancel" >
                                 <wnd id="EquipmentList" />
                         </button>
-<!--                        <act id="PrintDoc" title="Печать" >
-                                <field id="PrintDoc" class="Documents" src="/file/GPN/Documents/PrintDoc" args="DocID=DocumentsList.DocID"/>
-                        </act> -->
                         <act id="Download" title="Скачать документ" group="DocumentsGrid">
                                 <field id="Download" class="Documents" src="/file/GPN/Documents/Download" args="DocID=DocumentsList.DocID"/>
                         </act>
@@ -397,6 +396,31 @@
                         </act>
 
 		</wnd>
+                <wnd id="PompAdd" title="Насос" >
+                        <field id="DocFile" class="Documents" group="DocumentGrid"/>
+                        <field id="EquipID" visibility="no"/>
+                        <field id="DocumentsList" view="DocumentsByEquipList" class="Documents" title="Документы" group="DocumentGrid">
+                                <column field="DocID" class="Documents" />
+                                <column field="Name" class="Document" title="Наименование"/>
+                                <column field="CreateDate" />
+                                <column field="Login" class="Users" project="Authorizer" />
+                        </field>
+                        <button id="AddDoc" title="Добавить документ" group="DocumentGrid">
+                                <method id="Add" class="Pomp" args="EquipKindID InvNumber StatusID EState OwnerOrgID EquipmentType Power Capacity" rets="EquipID" when="EquipID='none:'" />
+                                <method id="Add" class="Documents" args="DocFile NID" rets="DocID" />
+                                <method id="DocumentsByEquipListGet" class="Documents" args="EquipID" rets="DocumentsList=*" />
+                        </button>
+                        <button id="DelDoc" title="Удалить документ" group="DocumentGrid" >
+                                <method id="Delete" class="Documents" args="DocsArray=DocumentsList.SelectedRows" />
+                                <method id="DocumentsByEquipListGet" class="Documents" args="EquipID" rets="DocumentsList=*" />
+                        </button>
+                        <button id="Add" title="Сохранить" >
+                                <method id="Update" args="EquipID EquipKindID InvNumber StatusID EState OwnerOrgID EquipmentType Power Capacit" when="EquipID!='none:'"/>
+                                <method id="Add" args="EquipKindID InvNumber StatusID EState OwnerOrgID EquipmentType Power Capacity" rets="EquipID" when="EquipID='none:'" />
+                                <wnd id="EquipmentFolder"  args="EquipID" />
+                        </button>
+                </wnd>
+
 		<wnd id="PompUpdate" title="Насос" >
                         <field id="DocFile" class="Documents" group="DocumentGrid"/> 
                          

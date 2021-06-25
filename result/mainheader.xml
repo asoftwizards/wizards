@@ -10,11 +10,6 @@
 	<ele id="properties"/>
 	<ele id="Help" src="/help/gpn-help.html"/>
 	<a id="Init">
-<!--	  <call aid="c0" meth="/srv/ABEA/ExpertCenter/GetCurrent" rets="Login TokenName=CenterName"/>
-	  <call aid="c1" meth="/srv/ABEA/Expert/GetCurrent" rets="lname=LastName fname=FirstName sname=SecondName"/> -->
-	  <!--		<call aid="c0" meth="/srv/ABEA/ExpertCenter/GetCurrent" rets="Login TokenName=CenterName"/>-->
-<!--		<call aid="c1" meth="/srv/Authorizer/Users/GetCurrent" rets="Login TokenName"/> -->
-<!--		<call aid="c2" meth="/srv/Nevod/Region/GetCurrent" rets="TokenName=RegionName Login"/> -->
 	</a>
 	<a id="logout">
 		<evt aid="c1" type="WM_REDIRECT" src="#logout" args=""/>
