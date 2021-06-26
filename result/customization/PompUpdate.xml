@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <wnd xmlns="http://www.asoft.ru/xsl/ai" id="PompUpdate" class="generic" title="`Насос`">
+  <a id="Choose_EStatus">
+    <evt aid="popupcall" type="WM_POPUP" id="Choose_EStatus" src="/act/GPN/EStatusNextListPopup" args="StatusID" rets=""/>
+  </a>
   <lay>
-    <grid id="DocumentGrid" heightLimit="80%">
+    <grid id="DocumentGrid" heightLimit="40%">
       <row id="DocFile">
         <cell id="DocFile_label" labelfor="DocFile" text="`Файл`"/>
         <cell id="DocFile">

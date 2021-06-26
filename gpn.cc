@@ -354,14 +354,14 @@ const Value GPNEquipment::Delete(const Int EquipID) {
 		successMessage << Message("Насос").What();
 	}
 	Documents aDoc;
+	EventJournal aEJ;
 	Selector selDoc;
 	selDoc << aDoc;
-	selDoc.Where( aDoc->EquipID == EquipID );
+	selDoc.Where( aDoc->EventID == aEJ->EventID && aEJ->EquipID == EquipID );
 	DataSet dsDoc = selDoc.Execute(rdb_);
 	while( dsDoc.Fetch() ) {
 		aDoc.Delete( rdb_ );
 	}
-	EventJournal aEJ;
 	Selector selEJ;
 	selEJ << aEJ;
 	selEJ.Where( aEJ->EquipID == EquipID );
@@ -384,23 +384,28 @@ const Value GPNEquipment::EquipmentMenuListGet(const optional<Int> EquipKindID) 
 	lr.AddColumn("InvNumber", Data::STRING);
 	lr.AddColumn("Name", Data::STRING);
 	lr.AddColumn("EState", Data::STRING, EQUIPMENT_STATEValues());
+	lr.AddColumn("OwnerName", Data::STRING);
 	Equipment aEquipment;
 	EquipmentKind aEType;
 	EStatus aEStatus;
+	Organization owner;
 	lr.Bind(aEquipment.EquipID, "EquipID");
 	lr.Bind(aEType.Kind, "ETypeKind");
 	lr.Bind(aEType.Name, "ETypeName");
 	lr.Bind(aEquipment.InvNumber, "InvNumber");
 	lr.Bind(aEStatus.Name, "Name");
 	lr.Bind(aEquipment.EState, "EState");
+	lr.Bind(owner.Name, "OwnerName");
 
 	Int GOrganization = GOrgID();
 
 	Selector sel;
 	sel << aEquipment->EquipID << aEquipment->InvNumber << aEStatus->Name << aEquipment->EState
-		 << aEType->Kind << aEType->Name;
+		 << aEType->Kind << aEType->Name
+		<< owner->Name;
 	sel.Where(aEquipment->EquipKindID==aEType->EquipKindID && aEquipment->StatusID == aEStatus->StatusID &&
 		 ( Defined(EquipKindID) ? aEquipment->EquipKindID==*EquipKindID : Expression()) &&
+		( aEquipment->OwnerOrgID == owner->OrgID ) &&
 		 ( IsNotNull( GOrganization ) ? aEquipment->OwnerOrgID == GOrganization : Expression() ));
 	DataSet data=sel.Execute(rdb_);
 	while(data.Fetch()) lr.AddRow();
@@ -434,12 +439,12 @@ const Value GPNContract::ContractListGet(const optional<Int> ExecuterOrgID) {
 	return res;
 }
 
-const Value GPNDocuments::Add( const BlobAccessor DocFile, const Int EquipID, const ADate CreateDate ) {
+const Value GPNDocuments::Add( const BlobAccessor DocFile, const Int EventID, const ADate CreateDate ) {
 	Int CurrUserID = SimpleThread::GetCurrentContext().GUserID();
 
 	Exception e((Message("Cannot add ") << Message("Документ").What() << ". ").What());
 	bool error=false;
-	error |= Defined(EquipID)  && !__CheckIDExists(Equipment()->EquipID, *EquipID, "Оборудование", e, rdb_);
+	error |= Defined(EventID)  && !__CheckIDExists(EventJournal()->EventID, *EventID, "Оборудование", e, rdb_);
 	if(error) {
 		throw(e);
 	}
@@ -457,7 +462,7 @@ const Value GPNDocuments::Add( const BlobAccessor DocFile, const Int EquipID, co
 		aDocuments.AddDate=SimpleThread::GetCurrentContext().GUserTime().date();
 		aDocuments.CreateDate=CreateDate;
 		aDocuments.AddByUserTokenID=CurrUserID;
-		aDocuments.EquipID=EquipID;
+		aDocuments.EventID=EventID;
 		Int sk=aDocuments.Insert(rdb_);
 		Value res;
 		res["DocID"]=sk;
@@ -493,10 +498,11 @@ const Value GPNDocuments::DocumentsByEquipListGet( const Int EquipID ) {
 	lr.Bind(addU.Login, "AddByUser");
 
 	if( IsNotNull( EquipID ) ) {
+		EventJournal aEventJournal;
 		Selector sel;
 		sel << aDocuments->DocID << aDocuments->Name << aDocuments->CreateDate;
 		sel.LeftJoin( addU ).On( aDocuments->AddByUserTokenID == addU->TokenID );
-		sel.Where( aDocuments->EquipID==EquipID );
+		sel.Where( aDocuments->EventID== aEventJournal->EventID && aEventJournal->EquipID == EquipID );
 		DataSet data=sel.Execute(rdb_);
 		while(data.Fetch()) lr.AddRow();
 	}
@@ -605,16 +611,35 @@ const Value GPNDocuments::Delete(const Value DocsArray ) {
 }
 */
 const Value GPNEStatus::EStatusNextListGet( const Int StatusID ) {
+	
+	Data::DataList lr;
+	lr.AddColumn("StatusID", Data::INTEGER);
+	lr.AddColumn("Name", Data::STRING);
+	EStatus aEStatus;
+	lr.Bind(aEStatus.StatusID, "StatusID");
+	lr.Bind(aEStatus.Name, "Name");
+	Selector sel;
+	sel << aEStatus->StatusID << aEStatus->Name;
+	sel.Where( (StatusID== 1 ? aEStatus->StatusID == 6 : Expression() ) &&
+		( StatusID == 2 ? aEStatus->StatusID == 1 :Expression() ) &&
+		( StatusID == 3 ? aEStatus->StatusID == 4 : Expression() ) &&
+		( StatusID == 4 ? aEStatus->StatusID == 5 : Expression() ) &&
+		( StatusID == 5 ? aEStatus->StatusID == 2 : Expression() ) &&
+		( StatusID == 6 ? aEStatus->StatusID == 3 : Expression() ) );
+	DataSet data=sel.Execute(rdb_);
+	while(data.Fetch()) lr.AddRow();
+	Value res=lr;
+	return res;
 	return EStatusListGet();
 }
 
 const Value GPNEventJournal::EquipEventJournalListGet(const Int EquipID ) {
 	Data::DataList lr;
 	lr.AddColumn("EventID", Data::INTEGER);
+	lr.AddColumn("EventDate", Data::DATETIME);
 	lr.AddColumn("esName", Data::STRING);
 	lr.AddColumn("State", Data::STRING, EQUIPMENT_STATEValues());
 	lr.AddColumn("epName", Data::STRING);
-	lr.AddColumn("EventDate", Data::DATETIME);
 	lr.AddColumn("TokenID", Data::INT64);
 	lr.AddColumn("FullName", Data::STRING);
 	lr.AddColumn("Note", Data::STRING);
@@ -632,12 +657,13 @@ const Value GPNEventJournal::EquipEventJournalListGet(const Int EquipID ) {
 	lr.Bind(FullName, "FullName");
 	lr.Bind(aEventJournal.Note, "Note");
 	Selector sel;
-	sel << aEventJournal->EventID << aep->Name << aes->Name << aEventJournal->State << aEventJournal->EventDate << aEventJournal->Note << u;
-	sel.LeftJoin(aep).On(aEventJournal->PointID==aep->PointID);
-	sel.Where(aEventJournal->StatusID==aes->StatusID &&  aEventJournal->EquipID==EquipID && aEventJournal->TokenID == u->TokenID );
+	sel << aEventJournal->EventID << aEventJournal->TokenID << aep->Name << aes->Name << aEventJournal->State << aEventJournal->EventDate << aEventJournal->Note << u;
+	sel.LeftJoin(aep).On(aEventJournal->PointID==aep->PointID)
+		.LeftJoin( u ).On( aEventJournal->TokenID == u->TokenID );
+	sel.Where(aEventJournal->StatusID==aes->StatusID &&  aEventJournal->EquipID==EquipID );
 	DataSet data=sel.Execute(rdb_);
 	while(data.Fetch()) {
-        	FullName=getFullName(u);
+        	FullName=( aEventJournal.TokenID == -1 ? "Администратор" : getFullName(u) );
 		lr.AddRow();
 	}
 	Value res=lr;
@@ -649,6 +675,7 @@ const Value GPNEventJournal::EPointEventJournalListGet(const Int PointID) {
 	lr.AddColumn("EventID", Data::INTEGER);
 	lr.AddColumn("ekKind", Data::STRING, EQUIP_KINDValues());
 	lr.AddColumn("ekName", Data::STRING);
+	lr.AddColumn("InvNumber", Data::STRING);
 	lr.AddColumn("esName", Data::STRING);
 	lr.AddColumn("State", Data::STRING, EQUIPMENT_STATEValues());
 	lr.AddColumn("EventDate", Data::DATETIME);
@@ -665,19 +692,190 @@ const Value GPNEventJournal::EPointEventJournalListGet(const Int PointID) {
 	lr.Bind(aek.Kind, "ekKind");
 	lr.Bind(aek.Name, "ekName");
 	lr.Bind(aes.Name, "esName");
+	lr.Bind(aEquipment.InvNumber, "InvNumber");
 	lr.Bind(aEventJournal.State, "State");
 	lr.Bind(aEventJournal.EventDate, "EventDate");
 	lr.Bind(u.TokenID, "TokenID");
 	lr.Bind(FullName, "FullName");
 	lr.Bind(aEventJournal.Note, "Note");
 	Selector sel;
-	sel << aEventJournal->EventID << aek->Kind << aek->Name << aes->Name << aEventJournal->State << aEventJournal->EventDate << aEventJournal->Note << u;
-	sel.Where((aEventJournal->EquipID==aEquipment->EquipID && aEquipment->EquipKindID==aek->EquipKindID && aEventJournal->StatusID==aes->StatusID) && aEventJournal->PointID==PointID && aEventJournal->TokenID==u->TokenID );
+	sel << aEventJournal->EventID << aEventJournal->State << aEventJournal->EventDate << aEventJournal->Note << aEventJournal->TokenID
+		<< aek->Kind << aek->Name 
+		<< aes->Name
+		<< aEquipment->InvNumber
+		<< u;
+	sel.Join( aEquipment ).On(aEventJournal->EquipID==aEquipment->EquipID ).Join( aek ).On( aEquipment->EquipKindID==aek->EquipKindID )
+		.Join( aes ).On( aEventJournal->StatusID==aes->StatusID )
+		.LeftJoin( u ).On( aEventJournal->TokenID == u->TokenID );
+	sel.Where(aEventJournal->PointID==PointID );
+	sel.OrderDesc( aEventJournal->EventDate);
 	DataSet data=sel.Execute(rdb_);
 	while(data.Fetch()) {
-        	FullName=getFullName(u);
+        	FullName=( aEventJournal.TokenID == -1 ? "Администратор" : getFullName(u) );
 		lr.AddRow();
 	}
+	Value res=lr;
+	return res;
+}
+
+const Value GPNEventJournal::Add(const Int EquipID, const optional<Int> PointID, const optional<Int> StatusID, const optional<Str> Note, const optional<Time> EventDate) {
+	Exception e((Message("Cannot add ") << Message("Журнал событий").What() << ". ").What());
+	bool error=false;
+	error |= Defined(EquipID)  && !__CheckIDExists(Equipment()->EquipID, *EquipID, "Оборудование", e, rdb_);
+	error |= Defined(PointID) && Defined(*PointID)  && !__CheckIDExists(EquipmentPoint()->PointID, *(*PointID), "Скважина", e, rdb_);
+	error |= Defined(StatusID) && Defined(*StatusID) && !__CheckIDExists(EStatus()->StatusID, *(*StatusID), "Статус", e, rdb_);
+	Int64 TokenID = SimpleThread::GetCurrentContext().GUserID(); 
+	if(error) {
+		throw(e);
+	}
+	try {
+		EventJournal aEventJournal;
+		aEventJournal.EquipID=EquipID;
+		Equipment aEquipment( EquipID );
+		aEquipment.Select(rdb_ );
+		if(Defined(PointID) ) aEventJournal.PointID=*PointID;
+		if(Defined(StatusID) ) aEventJournal.StatusID=*StatusID;
+		else aEventJournal.StatusID=1;
+		aEventJournal.State=aEquipment.EState;
+		if(Defined(Note) ) aEventJournal.Note=*Note;
+		if(Defined(EventDate) ) aEventJournal.EventDate=*EventDate;
+		else aEventJournal.EventDate=SimpleThread::GetCurrentContext().GUserTime() + hours(3);
+		aEventJournal.TokenID=TokenID;
+		Int sk=aEventJournal.Insert(rdb_);
+		Value res;
+		res["EventID"]=sk;
+		AddMessage(Message()<<Message("Журнал событий").What()<<" "<<sk<<" added. ");
+		return res;
+	}
+	catch (Exception& exc) {
+		if(exc.ErrorCode() == RDBMS_ERR_DUPLICATE_ENTRY) {
+			e << Message("Duplicate entry. ").What();
+		}
+		else {
+			e << Message(exc.what()).What();
+		}
+		throw e;
+	}
+}
+
+const Value GPNEquipment::EquipmentByEPointListGet( const optional<Int> PointID, const optional<Int> StatusID, const optional<Int64> TokenID) {
+	Data::DataList lr;
+	lr.AddColumn("EquipID", Data::INTEGER);
+	lr.AddColumn("ETypeKind", Data::STRING, EQUIP_KINDValues());
+	lr.AddColumn("ETypeName", Data::STRING);
+	lr.AddColumn("InvNumber", Data::STRING);
+	lr.AddColumn("Name", Data::STRING);
+	lr.AddColumn("State", Data::STRING, EQUIPMENT_STATEValues());
+	EventJournal aEventJournal;
+	EquipmentKind aEType;
+	Equipment aEquipment;
+	EStatus aEStatus;
+	lr.Bind(aEventJournal.EquipID, "EquipID");
+	lr.Bind(aEType.Kind, "ETypeKind");
+	lr.Bind(aEType.Name, "ETypeName");
+	lr.Bind(aEquipment.InvNumber, "InvNumber");
+	lr.Bind(aEStatus.Name, "Name");
+	lr.Bind(aEventJournal.State, "State");
+	Int GOrganization = GOrgID();
+	Selector sel;
+	sel << aEventJournal->EquipID << aEType->Kind << aEType->Name << aEquipment->InvNumber << aEStatus->Name << aEventJournal->State ;
+	sel.Where((aEventJournal->EquipID==aEquipment->EquipID && aEquipment->EquipKindID==aEType->EquipKindID &&
+			aEventJournal->StatusID==aEStatus->StatusID) &&
+			( IsNotNull( GOrganization ) ? aEquipment->OwnerOrgID == GOrganization : Expression() ) &&	
+			(Defined(PointID) ? aEventJournal->PointID==*PointID : Expression()) &&
+			(Defined(StatusID) ? aEventJournal->StatusID==*StatusID : Expression()) &&
+			(Defined(TokenID) ? aEventJournal->TokenID==*TokenID : Expression()));
+	sel.OrderDesc( aEventJournal->EventDate );
+	DataSet data=sel.Execute(rdb_);
+	set<Int> allEquip;
+	while(data.Fetch()) {
+		if( allEquip.find( aEventJournal.EquipID ) == allEquip.end() ) lr.AddRow();
+		allEquip.insert(aEventJournal.EquipID );
+	}
+	Value res=lr;
+	return res;
+}
+
+const Value GPNEquipment::StoredEquipmentListGet( const optional<Int> OrgID ) {
+	
+	Data::DataList lr;
+	lr.AddColumn("EquipID", Data::INTEGER);
+	lr.AddColumn("ETypeKind", Data::STRING, EQUIP_KINDValues());
+	lr.AddColumn("ETypeName", Data::STRING);
+	lr.AddColumn("InvNumber", Data::STRING);
+	lr.AddColumn("Name", Data::STRING);
+	lr.AddColumn("State", Data::STRING, EQUIPMENT_STATEValues());
+	EquipmentKind aEType;
+	Equipment aEquipment;
+	EStatus aEStatus;
+	lr.Bind(aEquipment.EquipID, "EquipID");
+	lr.Bind(aEType.Kind, "ETypeKind");
+	lr.Bind(aEType.Name, "ETypeName");
+	lr.Bind(aEquipment.InvNumber, "InvNumber");
+	lr.Bind(aEStatus.Name, "Name");
+	lr.Bind(aEquipment.EState, "State");
+	Int GOrganization = GOrgID();
+	Selector sel;
+	sel << aEquipment->EquipID << aEType->Kind << aEType->Name << aEquipment->InvNumber << aEStatus->Name << aEquipment->EState ;
+	sel.Where( aEquipment->EquipKindID==aEType->EquipKindID &&
+			aEquipment->StatusID==aEStatus->StatusID && aEStatus->StatusID == 1 && 
+			( IsNotNull( GOrganization ) ? aEquipment->OwnerOrgID == GOrganization : Expression() ) &&
+			( Defined( OrgID ) ? aEquipment->OwnerOrgID == *OrgID : Expression() ));
+
+	DataSet data=sel.Execute(rdb_);
+	while(data.Fetch()) {
+		lr.AddRow();
+	}
+	Value res=lr;
+	return res;
+
+}
+const Value GPNEquipment::EquipmentListGet(const optional<Int> EquipKindID, const optional<Int> StatusID, const optional<Int> OwnerOrgID) {
+	Data::DataList lr;
+	lr.AddColumn("EquipID", Data::INTEGER);
+	lr.AddColumn("ETypeKind", Data::STRING, EQUIP_KINDValues());
+	lr.AddColumn("ETypeName", Data::STRING);
+	lr.AddColumn("InvNumber", Data::STRING);
+	lr.AddColumn("Name", Data::STRING);
+	lr.AddColumn("EState", Data::STRING, EQUIPMENT_STATEValues());
+	Equipment aEquipment;
+	EquipmentKind aEType;
+	EStatus aEStatus;
+	Organization aOrganization;
+	lr.Bind(aEquipment.EquipID, "EquipID");
+	lr.Bind(aEType.Kind, "ETypeKind");
+	lr.Bind(aEType.Name, "ETypeName");
+	lr.Bind(aEquipment.InvNumber, "InvNumber");
+	lr.Bind(aEStatus.Name, "Name");
+	lr.Bind(aEquipment.EState, "EState");
+	Int GOrganization = GOrgID();
+	Selector sel;
+	sel << aEquipment->EquipID << aEType->Kind << aEType->Name << aEquipment->InvNumber << aEStatus->Name << aEquipment->EState;
+	sel.Where((aEquipment->EquipKindID==aEType->EquipKindID &&
+			aEquipment->OwnerOrgID==aOrganization->OrgID &&
+			aEquipment->StatusID==aEStatus->StatusID) &&
+			( IsNotNull( GOrganization ) ? aEquipment->OwnerOrgID == GOrganization : Expression() ) &&
+			(Defined(EquipKindID) ? aEquipment->EquipKindID==*EquipKindID : Expression()) &&
+			(Defined(StatusID) ? aEquipment->StatusID==*StatusID : Expression()) &&
+			(Defined(OwnerOrgID) ? aEquipment->OwnerOrgID==*OwnerOrgID : Expression()));
+	DataSet data=sel.Execute(rdb_);
+	while(data.Fetch()) lr.AddRow();
+	Value res=lr;
+	return res;
+}
+
+const Value GPNEStatus::EPointStatusListGet() {
+	Data::DataList lr;
+	lr.AddColumn("StatusID", Data::INTEGER);
+	lr.AddColumn("Name", Data::STRING);
+	EStatus aEStatus;
+	lr.Bind(aEStatus.StatusID, "StatusID");
+	lr.Bind(aEStatus.Name, "Name");
+	Selector sel;
+	sel << aEStatus->StatusID << aEStatus->Name;
+	sel.Where(aEStatus->StatusID == 3 || aEStatus->StatusID == 4 || aEStatus->StatusID == 5 );
+	DataSet data=sel.Execute(rdb_);
+	while(data.Fetch()) lr.AddRow();
 	Value res=lr;
 	return res;
 }

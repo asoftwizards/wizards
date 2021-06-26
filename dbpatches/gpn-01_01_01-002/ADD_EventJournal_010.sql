@@ -28,7 +28,6 @@ CREATE TABLE EventJournalArc (
 	PRIMARY KEY (EventID, UserArc, DateArc)
 ) ENGINE=Innobase DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Table for audit Журнал событий';
 
-
 CREATE INDEX EventJournalEquipment ON EventJournal(EquipID);
 ALTER TABLE EventJournal ADD CONSTRAINT EventJournal_Equipment FOREIGN KEY (EquipID) REFERENCES Equipment (EquipID);
 
@@ -38,19 +37,4 @@ ALTER TABLE EventJournal ADD CONSTRAINT EventJournal_EquipmentPoint FOREIGN KEY 
 CREATE INDEX EventJournalEStatus ON EventJournal(StatusID);
 ALTER TABLE EventJournal ADD CONSTRAINT EventJournal_EStatus FOREIGN KEY (StatusID) REFERENCES EStatus (StatusID);
 
-CREATE INDEX EventJournalGPNUser ON EventJournal(TokenID);
-ALTER TABLE EventJournal ADD CONSTRAINT EventJournal_GPNUser FOREIGN KEY (TokenID) REFERENCES GPNUser (TokenID);
-
-
-CREATE INDEX EventJournalEquipment ON EventJournal(EquipID);
-ALTER TABLE EventJournal ADD CONSTRAINT EventJournal_Equipment FOREIGN KEY (EquipID) REFERENCES Equipment (EquipID);
-
-CREATE INDEX EventJournalEquipmentPoint ON EventJournal(PointID);
-ALTER TABLE EventJournal ADD CONSTRAINT EventJournal_EquipmentPoint FOREIGN KEY (PointID) REFERENCES EquipmentPoint (PointID);
-
-CREATE INDEX EventJournalEStatus ON EventJournal(StatusID);
-ALTER TABLE EventJournal ADD CONSTRAINT EventJournal_EStatus FOREIGN KEY (StatusID) REFERENCES EStatus (StatusID);
-
-CREATE INDEX EventJournalGPNUser ON EventJournal(TokenID);
-ALTER TABLE EventJournal ADD CONSTRAINT EventJournal_GPNUser FOREIGN KEY (TokenID) REFERENCES GPNUser (TokenID);
 

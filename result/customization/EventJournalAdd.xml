@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wnd xmlns="http://www.asoft.ru/xsl/ai" id="EventJournalAdd" class="generic" title="`Монтаж`">
+  <a id="Choose_Equipment">
+    <evt aid="popupcall" type="WM_POPUP" id="Choose_Equipment" src="/act/GPN/StoredEquipmentListPopup" args="" rets=""/>
+  </a>
+  <a id="Choose_EStatus">
+    <evt aid="popupcall" type="WM_POPUP" id="Choose_EStatus" src="/act/GPN/EStatusNextListPopup" args="" rets=""/>
+  </a>
+  <lay>
+    <grid id="General">
+      <row id="Equipment">
+        <cell id="Equipment_label" labelfor="EquipID" text="`Оборудование`"/>
+        <cell id="Equipment">
+          <ele id="EquipID"/>
+          <ele id="Choose_Equipment"/>
+        </cell>
+      </row>
+      <row id="EquipmentPoint">
+        <cell id="EquipmentPoint_label" labelfor="PointID" text="`Скважина`"/>
+        <cell id="EquipmentPoint">
+          <ele id="EquipmentPointName"/>
+          <ele id="Choose_EquipmentPoint"/>
+        </cell>
+      </row>
+      <row id="Note" >
+        <cell id="Note_label" labelfor="Note" text="`Обоснование`"/>
+        <cell id="Note">
+          <ele id="Note"/>
+        </cell>
+      </row>
+      <row id="EventDate">
+        <cell id="EventDate_label" labelfor="EventDate" text="`Дата события`*"/>
+        <cell id="EventDate">
+          <ele id="EventDate"/>
+        </cell>
+      </row>
+    </grid>
+  </lay>
+</wnd>

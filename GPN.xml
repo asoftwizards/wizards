@@ -168,9 +168,8 @@
 		</fields>
 		<folder id="ContractFolder" title="Договор">
 			<field id="ContractID" />
-			<elem wnd="ContractGet" args="ContractID" title="General" />
+			<elem wnd="ContractGet" args="ContractID" title="Договор" />
 			<elem wnd="EquipmentPointList" args="ContractID" title="Скважины" />
-			<elem wnd="EquipmentList" args="OwnerOrgID=ExecuterOrgID" title="Оборудование" />
 		</folder>
 		<method id="ContractListGet" >
 			<arg field="ExecuterOrgID" optional="yes" />
@@ -198,9 +197,10 @@
 			<Y type="DOUBLE" notnull="yes" title="Широта" min="-90" max="90" decimal-accuracy="10" />
 			<H type="DOUBLE" title="Глубина" />
 		</fields>
-		<folder id="EquipmentPointFolder" >
+		<folder id="EquipmentPointFolder" title="Скважина">
 			<field id="PointID" />
 			<elem wnd="EquipmentPointGet" args="PointID" title="Скважина"/>
+			<elem wnd="EquipmentByEPointList" args="PointID" title="Оборудование" />
 			<elem wnd="EPointEventJournalList" args="PointID" title="Журнал событий" />
 		</folder>
 		<view id="EquipmentPointList" title="Скважина" >
@@ -225,7 +225,7 @@
                         <AddDate type="DATE" title="Дата добавления" hidden="yes"/>
                         <CreateDate type="DATE" title="Дата" />
                         <AddByUser ref="Users" project="Authorizer" hidden="yes" title="Добавил" />
-                        <Equipment title="Оборудование" />
+                        <EventJournal title="Событие" />
                         <FileBody type="BLOB" notnull="yes" title="Документ" hidden="yes"/>
 
                         <DocFile type="FILE" title="Файл" virtual="yes"/>
@@ -234,7 +234,7 @@
                 </fields>
                 <method id="Add" >
                         <arg field="DocFile" />
-                        <arg field="EquipID" />
+                        <arg field="EventID" />
                         <arg field="CreateDate" />
                 </method>
                 <method id="Delete">
@@ -248,7 +248,7 @@
                         <arg field="DocID" />
                 </method> -->
                 <method id="DocumentsByEquipListGet" >
-                        <arg field="EquipID" />
+                        <arg field="EquipID" class="Equipment" />
                 </method>
               	<view id="DocumentsList" title="Документы" >
                         <column field="DocID" />
@@ -294,16 +294,21 @@
 			<StatusID type="ID" key="sk" title="Код статуса" hidden="yes" />
 			<Name type="NAME" title="Статус" notnull="yes" />
 		</fields>
-		<view id="EStatusList">
+		<view id="EStatusList" title="Статус" >
 			<column field="StatusID" ret="yes" />
 			<column field="Name" ret="yes" />
 		</view>
 		<method id="EStatusNextListGet" >
 			<arg field="StatusID" />
 		</method>
-		<view id="EStatusNextList">
+		<view id="EStatusNextList" title="Статус" >
 			<column field="StatusID" />
 			<column field="Name" />
+		</view>
+		<method id="EPointStatusListGet" />
+		<view id="EPointStatusList" title="Статус" >
+			<column field="StatusID" />
+                        <column field="Name" />
 		</view>
 	</class>
 
@@ -321,6 +326,12 @@
 		<method id="Delete" >
 			<arg field="EquipID" />
 		</method>
+		<method id="EquipmentListGet" >
+			<arg field="EquipKindID" optional="yes" />
+			<arg field="StatusID" optional="yes" />
+			<arg field="OwnerOrgID" optional="yes" />
+				
+		</method>
                 <view id="EquipmentList" title="Оборудование" exclude="AddEquipment" >
                         <column field="EquipID" ret="yes"/>
                         <column field="Kind" class="EquipmentKind" alias="EType" title="Оборудование" />
@@ -329,11 +340,11 @@
 			<column field="Name" class="EStatus" />
 			<column field="EState" />
 
-                        <select>
+<!--                        <select>
 				<and left-field="EquipKindID" compare="=" right-alias="EType" right-class="EquipmentKind" right-field="EquipKindID" />
 				<and left-field="OwnerOrgID" compare="=" right-class="Organization" right-field="OrgID" />
 				<and left-field="StatusID" compare="=" right-class="EStatus" right-field="StatusID" />
-                        </select>
+                        </select> -->
 
                 </view>
 		<method id="EquipmentMenuListGet" >
@@ -346,6 +357,7 @@
                         <column field="InvNumber" />
 			<column field="Name" class="EStatus" />
 			<column field="EState" />
+			<column field="Name" class="Organization" alias="Owner" title="Собственник" />
 
 <!--                        <select>
 				<and left-field="EquipKindID" compare="=" right-alias="EType" right-class="EquipmentKind" right-field="EquipKindID" />
@@ -354,8 +366,33 @@
                         </select>
 -->
                 </view>
-
-
+		<method id="EquipmentByEPointListGet" >
+			<arg field="PointID" class="EquipmentPoint" optional="yes" />
+			<arg field="StatusID" optional="yes" />
+			<arg field="TokenID" class="GPNUser" optional="yes" />
+		</method>		
+		<view id="EquipmentByEPointList" title="Оборудование" exclude="Delete AddEquipment AddPomp">
+                        <column field="EquipID" ret="yes"/>
+                        <column field="Kind" class="EquipmentKind" alias="EType" title="Оборудование" />
+                        <column field="Name" class="EquipmentKind" alias="EType" title="Оборудование" />
+                        <column field="InvNumber" ret="yes"/>
+			<column field="Name" class="EStatus" />
+			<column field="EState" />
+			<button id="AddEquipToPoint" title="Добавить оборудование" >
+				<wnd id="EventJournalAdd" args="PointID" />
+			</button>
+		</view>
+		<method id="StoredEquipmentListGet" >
+			<arg field="OrgID" class="Organization" optional="yes" />
+		</method>
+		<view id="StoredEquipmentList" title="Оборудование на складе" exclude="Delete AddEquipment AddPomp">
+                        <column field="EquipID" ret="yes"/>
+                        <column field="Kind" class="EquipmentKind" alias="EType" title="Оборудование" />
+                        <column field="Name" class="EquipmentKind" alias="EType" title="Оборудование" />
+                        <column field="InvNumber" ret="yes"/>
+			<column field="Name" class="EStatus" />
+			<column field="EState" />
+		</view>
 	</class>
 	<class id="Pomp" title="Насос" parent="Equipment" >
 		<fields>
@@ -403,6 +440,7 @@
                 <wnd id="PompAdd" title="Насос" >
                         <field id="DocFile" class="Documents" group="DocumentGrid"/>
                         <field id="EquipID" visibility="no"/>
+                        <field id="EventID" visibility="no"/>
                         <field id="DocumentsList" view="DocumentsByEquipList" class="Documents" title="Документы" group="DocumentGrid">
                                 <column field="DocID" class="Documents" />
                                 <column field="Name" class="Document" title="Наименование"/>
@@ -411,16 +449,19 @@
                         </field>
                         <button id="AddDoc" title="Добавить документ" group="DocumentGrid">
                                 <method id="Add" class="Pomp" args="EquipKindID InvNumber StatusID EState OwnerOrgID EquipmentType Power Capacity" rets="EquipID" when="EquipID='none:'" />
-                                <method id="Add" class="Documents" args="DocFile NID" rets="DocID" />
+                                <method id="Add" class="EventJournal" args="EquipID" rets="EventID" when="EventID='none:'" />
+                                <method id="Add" class="Documents" args="DocFile EventID" rets="DocID" />
                                 <method id="DocumentsByEquipListGet" class="Documents" args="EquipID" rets="DocumentsList=*" />
                         </button>
                         <button id="DelDoc" title="Удалить документ" group="DocumentGrid" >
                                 <method id="Delete" class="Documents" args="DocsArray=DocumentsList.SelectedRows" />
-                                <method id="DocumentsByEquipListGet" class="Documents" args="EquipID" rets="DocumentsList=*" />
+                                <method id="DocumentsByEquipListGet" class="Documents" args="EventID" rets="DocumentsList=*" />
                         </button>
                         <button id="Add" title="Сохранить" >
                                 <method id="Update" args="EquipID EquipKindID InvNumber StatusID EState OwnerOrgID EquipmentType Power Capacit" when="EquipID!='none:'"/>
+                                <method id="Update" class="EventJournal" args="EventID EquipID StatusID EState Note EventDate" when="EventID!='none:'"/>
                                 <method id="Add" args="EquipKindID InvNumber StatusID EState OwnerOrgID EquipmentType Power Capacity" rets="EquipID" when="EquipID='none:'" />
+                                <method id="Add" class="EventJournal" args="EquipID StatusID EState " rets="EventID" when="EventID='none:'" />
                                 <wnd id="EquipmentFolder"  args="EquipID" />
                         </button>
                 </wnd>
@@ -463,17 +504,21 @@
 			<State type="EQUIPMENT_STATE" title="Состояние" notnull="yes" />
 			<Note type="STR500" title="Обоснование"/>
 			<EventDate type="TIMESTAMP" title="Дата события" notnull="yes"/>
-			<GPNUser title="Сотрудник" notnull="yes" />
+			<TokenID type="ID" title="Сотрудник" />
 		</fields>
+		<view id="EventJournalList" title="Журнал" >
+			<column field="EventID" ret="yes" />
+			<column field="EventDate" />
+		</view>
 		<method id="EquipEventJournalListGet" >
 			<arg field="EquipID" />
 		</method>
 		<view id="EquipEventJournalList" title="Журнал событий" exclude="AddEventJournal Delete" >
 			<column field="EventID" />
+			<column field="EventDate" />
 			<column field="Name" class="EStatus" alias="es" />
 			<column field="State" />
 			<column field="Name" class="EquipmentPoint" alias="ep" title="Скважина"/>
-			<column field="EventDate" />
 			<column field="TokenID" />
 			<column field="FullName" class="GPNUser" />
 			<column field="Note" />
@@ -491,6 +536,7 @@
 			<column field="EventID" />
 			<column field="Kind" class="EquipmentKind" alias="ek"/>
 			<column field="Name" class="EquipmentKind" alias="ek"/>
+			<column field="InvNumber" class="Equipment" />
 			<column field="Name" class="EStatus" alias="es" />
 			<column field="State" />
 			<column field="EventDate" />
@@ -503,6 +549,43 @@
 				<and left-field="StatusID" compare="=" right-alias="es" right-class="EStatus" right-field="StatusID" />
 			</select> -->
 		</view>
+		<method id="Add" >
+			<arg field="EquipID" />
+			<arg field="PointID" optional="yes" />
+			<arg field="StatusID" optional="yes" />
+			<arg field="Note" optional="yes"/>
+			<arg field="EventDate" optional="yes"/>
+		</method>
+                <wnd id="EventJournalAdd" title="Монтаж" >
+                        <field id="DocFile" class="Documents" group="DocumentGrid"/>
+                        <field id="EventID" visibility="no"/>
+                        <field id="PointID" visibility="no"/>
+                        <field id="StatusID" visibility="no"/>
+                        <field id="DocumentsList" view="DocumentsByEquipList" class="Documents" title="Документы" group="DocumentGrid">
+                                <column field="DocID" class="Documents" />
+                                <column field="Name" class="Document" title="Наименование"/>
+                                <column field="CreateDate" />
+                                <column field="Login" class="Users" project="Authorizer" />
+                        </field>
+			<init>
+				<method id="Get" class="EquipmentPoint" args="PointID" rets="OwnerOrgID" />
+			</init>
+                        <button id="AddDoc" title="Добавить документ" group="DocumentGrid">
+                                <method id="Add" class="EventJournal" args="EquipID PointID StatusID Note EventDate" rets="EventID" when="EventID='none:'" />
+                                <method id="Add" class="Documents" args="DocFile EventID" rets="DocID" />
+                                <method id="DocumentsByEquipListGet" class="Documents" args="EquipID" rets="DocumentsList=*" />
+                        </button>
+                        <button id="DelDoc" title="Удалить документ" group="DocumentGrid" >
+                                <method id="Delete" class="Documents" args="DocsArray=DocumentsList.SelectedRows" />
+                                <method id="DocumentsByEquipListGet" class="Documents" args="EquipID" rets="DocumentsList=*" />
+                        </button>
+                        <button id="Add" title="Сохранить" >
+                                <method id="Update" args="EventID EquipID StatusID PointID Note EventDate" when="EventID!='none:'"/>
+                                <method id="Add" args="EquipID PointID StatusID Note EventDate" rets="EventID" when="EventID='none:'" />
+                                <method id="Update" class="Equipment" args="EquipID StatusID"/>
+				<evt type="WM_BACK" args="" step="1"/>
+                        </button>
+                </wnd>
 	</class>
 
 

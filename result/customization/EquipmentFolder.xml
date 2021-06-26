@@ -9,6 +9,7 @@
 			<row id="rt">
 				<cell id="ct1" class="TabBarCell">
 					<ele id="EquipmentGet"/>
+                                        <ele id="EventJournalList" hide="yes" />
 					<ele id="DocumentsList" hide="yes" />
 					<ele id="EquipEventJournalList"/>
 				</cell>
