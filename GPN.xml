@@ -508,7 +508,8 @@
                                 <method id="DocumentsByEquipListGet" class="Documents" args="EquipID" rets="DocumentsList=*" /> 
                         </init>  
                         <button id="AddDoc" title="Добавить документ" group="DocumentGrid"> 
-                                <method id="Add" class="Documents" args="DocFile EquipID" rets="DocID" /> 
+                                <method id="Add" class="EventJournal" args="EquipID StatusID EState" rets="EventID" />
+                                <method id="Add" class="Documents" args="DocFile EventID" rets="DocID" /> 
                                 <method id="DocumentsByEquipListGet" class="Documents" args="EquipID" rets="DocumentsList=*" /> 
                         </button> 
                         <button id="DelDoc" title="Удалить документ" group="DocumentGrid"> 
@@ -517,6 +518,8 @@
                         </button> 
                         <button id="Update" title="Сохранить" > 
                                 <method id="Update" args="EquipID StatusID EState"/>
+                                <method id="Add" class="EventJournal" args="EquipID StatusID EState" rets="EventID" when="EventID='none:'" />
+                                <method id="Update" class="EventJournal" args="EventID EquipID StatusID EState" when="EventID!='none:'" />
                                 <wnd id="PompGet"  args="EquipID" /> 
                         </button> 
                 </wnd>
