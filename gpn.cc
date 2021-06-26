@@ -339,6 +339,44 @@ const Value GPNGPNUser::GPNUserListGet( const optional<Int> OrgID ) {
 	return res;
 }
 
+const Value GPNEquipment::Delete(const Int EquipID) {
+	Equipment aRecord;
+	Str recordType;
+	Message successMessage=Message();
+	Selector sel;
+	sel.Where( aRecord->EquipID==EquipID) << aRecord->EquipmentType.Bind(recordType);
+	if(!(sel.Execute(rdb_).Fetch()) || IsNull(recordType)) {
+		recordType="Equipment";
+	};
+	if(IsNull(recordType) || (*recordType=="Equipment")){
+		successMessage << Message("Оборудование").What();
+	}
+	else if(*recordType =="Pomp") {
+		successMessage << Message("Насос").What();
+	}
+	Documents aDoc;
+	Selector selDoc;
+	selDoc << aDoc;
+	selDoc.Where( aDoc->EquipID == EquipID );
+	DataSet dsDoc = selDoc.Execute(rdb_);
+	while( dsDoc.Fetch() ) {
+		aDoc.Delete( rdb_ );
+	}
+	EventJournal aEJ;
+	Selector selEJ;
+	selEJ << aEJ;
+	selEJ.Where( aEJ->EquipID == EquipID );
+	DataSet dsEJ = selEJ.Execute(rdb_);
+	while( dsEJ.Fetch() ) {
+		aEJ.Delete( rdb_ );
+	}
+
+	aRecord.EquipID=EquipID;
+	aRecord.Delete(rdb_);
+	AddMessage( successMessage<<" "<<EquipID<<" deleted. ");
+	return Value();
+}
+
 const Value GPNEquipment::EquipmentMenuListGet(const optional<Int> EquipKindID) {
 	Data::DataList lr;
 	lr.AddColumn("EquipID", Data::INTEGER);
@@ -641,6 +679,80 @@ const Value GPNEquipment::LoadEquipFile(const BlobAccessor XmlFile) {
 */
 const Value GPNEStatus::EStatusNextListGet( const Int StatusID ) {
 	return EStatusListGet();
+}
+
+const Value GPNEventJournal::EquipEventJournalListGet(const Int EquipID ) {
+	Data::DataList lr;
+	lr.AddColumn("EventID", Data::INTEGER);
+	lr.AddColumn("esName", Data::STRING);
+	lr.AddColumn("State", Data::STRING, EQUIPMENT_STATEValues());
+	lr.AddColumn("epName", Data::STRING);
+	lr.AddColumn("EventDate", Data::DATETIME);
+	lr.AddColumn("TokenID", Data::INT64);
+	lr.AddColumn("FullName", Data::STRING);
+	lr.AddColumn("Note", Data::STRING);
+	EventJournal aEventJournal;
+	EquipmentPoint aep;
+	EStatus aes;
+	Str FullName;
+	GPNUser u;
+	lr.Bind(aEventJournal.EventID, "EventID");
+	lr.Bind(aep.Name, "epName");
+	lr.Bind(aes.Name, "esName");
+	lr.Bind(aEventJournal.State, "State");
+	lr.Bind(aEventJournal.EventDate, "EventDate");
+	lr.Bind(u.TokenID, "TokenID");
+	lr.Bind(FullName, "FullName");
+	lr.Bind(aEventJournal.Note, "Note");
+	Selector sel;
+	sel << aEventJournal->EventID << aep->Name << aes->Name << aEventJournal->State << aEventJournal->EventDate << aEventJournal->Note << u;
+	sel.LeftJoin(aep).On(aEventJournal->PointID==aep->PointID);
+	sel.Where(aEventJournal->StatusID==aes->StatusID &&  aEventJournal->EquipID==EquipID && aEventJournal->TokenID == u->TokenID );
+	DataSet data=sel.Execute(rdb_);
+	while(data.Fetch()) {
+        	FullName=getFullName(u);
+		lr.AddRow();
+	}
+	Value res=lr;
+	return res;
+}
+
+const Value GPNEventJournal::EPointEventJournalListGet(const Int PointID) {
+	Data::DataList lr;
+	lr.AddColumn("EventID", Data::INTEGER);
+	lr.AddColumn("ekKind", Data::STRING, EQUIP_KINDValues());
+	lr.AddColumn("ekName", Data::STRING);
+	lr.AddColumn("esName", Data::STRING);
+	lr.AddColumn("State", Data::STRING, EQUIPMENT_STATEValues());
+	lr.AddColumn("EventDate", Data::DATETIME);
+	lr.AddColumn("TokenID", Data::INT64);
+        lr.AddColumn("FullName", Data::STRING);
+	lr.AddColumn("Note", Data::STRING);
+	EventJournal aEventJournal;
+	EquipmentKind aek;
+	EStatus aes;
+	Equipment aEquipment;
+	Str FullName;
+	GPNUser u;
+	lr.Bind(aEventJournal.EventID, "EventID");
+	lr.Bind(aek.Kind, "ekKind");
+	lr.Bind(aek.Name, "ekName");
+	lr.Bind(aes.Name, "esName");
+	lr.Bind(aEventJournal.State, "State");
+	lr.Bind(aEventJournal.EventDate, "EventDate");
+	lr.Bind(u.TokenID, "TokenID");
+	lr.Bind(FullName, "FullName");
+	lr.Bind(aEventJournal.Note, "Note");
+	Selector sel;
+	sel << aEventJournal->EventID << aek->Kind << aek->Name << aes->Name << aEventJournal->State << aEventJournal->EventDate << aEventJournal->Note << u;
+	sel.Where((aEventJournal->EquipID==aEquipment->EquipID && aEquipment->EquipKindID==aek->EquipKindID && aEventJournal->StatusID==aes->StatusID) && aEventJournal->PointID==PointID && aEventJournal->TokenID==u->TokenID );
+	DataSet data=sel.Execute(rdb_);
+	while(data.Fetch()) {
+        	FullName=getFullName(u);
+		lr.AddRow();
+	}
+	Value res=lr;
+	return res;
 }
 
 }
