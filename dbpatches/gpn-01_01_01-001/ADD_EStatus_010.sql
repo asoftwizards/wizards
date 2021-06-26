@@ -1,4 +1,4 @@
-drop table EStatus;
+--drop table EStatus;
 
 
 CREATE TABLE IF NOT EXISTS EStatus (
