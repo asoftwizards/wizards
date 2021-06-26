@@ -316,12 +316,12 @@
 		<fields>
 			<EquipID type="ID" key="sk" title="Код записи" hidden="yes" />
 			<EquipmentKind title="Оборудование" notnull="yes" />
-                        <InvNumber type="NAME" notnull="yes" title="Инвентаризационный номер" />
+            <InvNumber type="NAME" notnull="yes" title="Инвентаризационный номер" />
 
 			<EStatus title="Статус" notnull="yes" />
 			<EState type="EQUIPMENT_STATE" title="Состояние" notnull="yes" />
 			<Owner ref="Organization" notnull="yes" title="Собственник" />
-
+            <XmlFile type="FILE" title="Файл" virtual="yes"/>
 		</fields>
 		<method id="Delete" >
 			<arg field="EquipID" />
@@ -350,6 +350,34 @@
 		<method id="EquipmentMenuListGet" >
 			<arg field="EquipmentKind" optional="yes" />
 		</method>
+		
+		<method id="LoadEquipFile" category="mod">
+			<arg field="XmlFile" />	
+			<ret field="InvNumber"/>
+			<ret field="EquipKindID"/>
+            <ret field="StatusID"/>
+            <ret field="EState"/>
+            <ret field="OrgID" class="Organization"/>
+		</method>
+		<wnd id="LoadXmlFile" title="Загрузка из файла" >
+			<field id="XmlFile" />
+			<button id="Load" title="Загрузить">
+				<wnd id="LoadEquipFileResult" args="XmlFile"/>
+			</button>
+		</wnd>
+		<wnd id="LoadEquipFileResult" title="Загруженные данные">
+		    <field id="InvNumber"/>
+		    <field id="EquipKindID"/>
+		    <field id="StatusID"/>
+		    <field id="EState"/>
+		    <field id="OrgID"/>
+		    <init>
+		        <method id="LoadEquipFile" args="XmlFile" rets="InvNumber EquipKindID StatusID EState OrgID"/>
+		    </init>
+		    <button id="Save" title="Сохранить">
+
+			</button>
+		</wnd>
                 <view id="EquipmentMenuList" title="Оборудование проектов" exclude="AddEquipment" >
                         <column field="EquipID" ret="yes"/>
                         <column field="Kind" class="EquipmentKind" alias="EType" title="Оборудование" />
@@ -608,7 +636,7 @@
 			<elem id="EStore" title="Оборудование" src="/act/GPN/EquipmentMenuList"/>
 		</elem>
 		<elem id="Intergartion" title="Интеграция" >
-			<elem id="Int1C" title="1C" src="/act/GPN/Integration1C"/>
+			<elem id="Int1C" title="1C" src="/act/GPN/LoadXmlFile"/>
 			<elem id="IntMehfond" title="ЭРА:Мехфонд" src="/act/GPN/IntegrationMehfond"/>
 		</elem>
 		<elem id="Reports" title="Отчеты" >

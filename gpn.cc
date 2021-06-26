@@ -5,7 +5,8 @@
 //#include "aofficeconnector-transform.h"
 #include "dynwin/dynwin.h"
 
-
+#include <iostream>
+#include <sstream>
 #include <sys/stat.h>
 
 int AfterRegisterCallback(MTContainer* container) {
@@ -543,7 +544,79 @@ const Value GPNDocuments::Delete(const Value DocsArray ) {
         return Value();
 }
 
+void SaveEquipToXML(const Int ecode) {
+    Equipment eq(ecode);
+    
+    if ( ! eq.Select(rdb_) ) return;
+    
+    char fname[64];
+    
+    memset(fname,0,sizeof(fname));
+    sprintf(fname,"export/%ld.xml",time(0));
+    Log(0) << "=============> " << fname << endl;
+    XMLDoc doc;
+    
+    doc.CreateRoot("equip");
+    
+    XMLNode root = doc.Root();
+    XMLNode invnumber = root.AddChild("invnumber");
+    
+    invnumber.AddAttribute("id","in");
+    invnumber.SetText(eq.InvNumber.get_value_or(""));
+    
+    XMLNode org = root.AddChild("org");
+    
+    org.AddAttribute("id","org");
+    org.SetText(ToString(eq.OwnerOrgID.get_value_or(0)));
+    
+    doc.Save(fname);
+}
 
+const Value GPNEquipment::LoadEquipFile(const BlobAccessor XmlFile) {
+    Exception e((Message("Cannot import ") << Message("файл").What() << ". ").What()); 
+    
+    if(XmlFile.IsNull() || XmlFile.Name().empty()) {
+		throw Exception("Документ не выбран");
+	}
+
+	try {
+		string Name = XmlFile.Name();
+		ShPtr<Blob> _File = XmlFile.BlobData();
+		string xml(_File->Data(),XmlFile.Size());
+		XMLDoc doc;
+		
+		doc.Parse(xml.c_str(),strlen(xml.c_str()));
+		
+		XMLNode invn = doc.GetElementById("in");
+		XMLNode ek = doc.GetElementById("ik");
+		XMLNode es = doc.GetElementById("s");
+		XMLNode est = doc.GetElementById("st");
+		XMLNode eorg = doc.GetElementById("org");
+		string txt = Trim(invn.Content()); 
+		
+		Value res;
+		
+		res["InvNumber"] = txt;
+		res["EquipKindID"] = ToInt(Trim(ek.Content()));
+		res["StatusID"] = ToInt(Trim(es.Content()));
+		res["EState"] = Trim(est.Content());
+		res["OrgID"] = ToInt(Trim(eorg.Content()));
+		
+		Log(0) << res << endl;
+		
+	    SaveEquipToXML(1);
+		return res;
+	}
+	catch (Exception& exc) {
+		if(exc.ErrorCode() == RDBMS_ERR_DUPLICATE_ENTRY) {
+			e << Message("Duplicate entry. ").What();
+		}
+		else {
+			e << Message(exc.what()).What();
+		}
+		throw e;
+	}
+}
 
 /*const Value GPNDocuments::PrintDoc(const Int DocID ) {
         Documents aRecord( DocID );
